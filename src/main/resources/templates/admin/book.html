@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<style>
+    th, td {
+        white-space: nowrap;
+    }
+
+    #toast {
+        position: fixed;
+        right: 20px;
+        top: 60px;
+    }
+</style>
+<body>
+<div class="container">
+    <div class="row">
+        <div class="col-3">
+            <div class="input-group mb-3">
+                <input type="text" class="form-control" placeholder="book or author" aria-label="search"
+                       id="search-text" aria-describedby="search-btn">
+                <div class="input-group-append">
+                    <button class="btn btn-outline-secondary" type="button" id="search-btn">搜索</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="table-responsive">
+        <table class="table">
+            <thead>
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">书名</th>
+                <th scope="col">作者</th>
+                <th scope="col">出版社</th>
+                <!--            <th scope="col">版本</th>-->
+                <!--                <th scope="col">简介</th>-->
+                <th scope="col">原价</th>
+                <th scope="col">售价</th>
+                <th scope="col">访问量</th>
+                <th scope="col">发布日期</th>
+                <th scope="col">操作</th>
+            </tr>
+            </thead>
+            <tbody id="tbody">
+            <tr>
+                <th scope="row">1</th>
+                <td>菊与刀</td>
+                <td>鲁思·本尼迪克特</td>
+                <td>商务印书馆</td>
+                <!--                <td>鲁思·本尼迪克特 著 / 商务印书馆 / 1990-06 / 平装</td>-->
+                <td>999</td>
+                <td>89</td>
+                <td>1</td>
+                <td>2019-09-09 12:23:4</td>
+                <td>
+                    <a href="#" class="badge badge-danger">删除</a>
+                    <a href="#" class="badge badge-secondary">修改</a>
+                    <a href="#" class="badge badge-primary">查看</a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    <div id="toast" class="toast bg-success" role="alert" aria-live="assertive" aria-atomic="true" data-delay="2000">
+        <div class="toast-header alter">
+            <!--            <img src="" class="rounded mr-2" alt="">-->
+            <strong class="mr-auto" id="boast-content">success</strong>
+            <!--                        <small>11 mins ago</small>-->
+            <!--            <button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">-->
+            <!--                <span aria-hidden="true">&times;</span>-->
+            <!--            </button>-->
+        </div>
+        <!--        <div class="toast-body">-->
+        <!--            删除成功-->
+        <!--        </div>-->
+    </div>
+    <nav aria-label="Page navigation example">
+        <ul class="pagination justify-content-center" id="pagination">
+
+        </ul>
+    </nav>
+
+    <div class="modal fade" id="updateModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">修改书籍信息</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <div class="form-group">
+                            <label for="name" class="col-form-label">书名:</label>
+                            <input type="text" class="form-control" name="name" id="name">
+                        </div>
+                        <div class="form-group">
+                            <label for="description" class="col-form-label">简介:</label>
+                            <textarea class="form-control" id="description"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="author" class="col-form-label">作者:</label>
+                            <input type="text" class="form-control" name="author" id="author"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="press" class="col-form-label">出版社:</label>
+                            <input type="text" class="form-control" name="press" id="press"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="originalPrice" class="col-form-label">原价:</label>
+                            <input type="text" class="form-control" id="originalPrice"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="price" class="col-form-label">现价:</label>
+                            <input type="text" class="form-control" id="price"></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
+                    <button type="button" class="btn btn-primary" id="submit-update">确认修改</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+</body>
+<script>
+
+    var currentPageNum = 1;
+    var pages = 1;
+
+    function getBookList(pageNum, search) {
+        $.get("/admin/bookList",
+            {
+                "pageNum": pageNum,
+                "search": search
+            }
+            , function (data) {
+                $("#pagination").html(" ");
+                $("#tbody").html(" ");
+
+                $.each(data.data.records, function (i, item) {
+                    $("#tbody").append(
+                        "<tr>\n" +
+                        "            <th scope=\"row\">" + i + "</th>\n" +
+                        "            <td>" + item.name + "</td>\n" +
+                        "            <td> " + item.author + " </td>\n" +
+                        "            <td>" + item.press + "</td>\n" +
+                        // "            <td>" + item.description + "</td>\n" +
+                        "            <td>" + item.price + "</td>\n" +
+                        "            <td> " + item.price + " </td>\n" +
+                        "            <td>" + item.cid + "</td>\n" +
+                        "            <td>" + item.date + "</td>\n" +
+                        "            <td>\n" +
+                        "                <a href=\"#\" value=\" " + item.id + " \" class=\"badge badge-danger delete-btn \">删除</a>\n" +
+                        "                <a href=\"#\"  value=\" " + item.id + " \" class=\"badge badge-secondary update-btn \">修改</a>\n" +
+                        "                <a href=\"#\" class=\"badge badge-primary preview-btn \">查看</a>\n" +
+                        "            </td>\n" +
+                        "        </tr>"
+                    );
+                });
+                currentPageNum = data.data.current;
+                pages = data.data.pages;
+                if (pages > 1) {
+                    if (currentPageNum == 1) {
+                        $("#pagination").append(
+                            "           <li class=\"page-item disabled btn-pre\">\n" +
+                            "                <a class=\"page-link\" href=\"#\" aria-label=\"Previous\">\n" +
+                            "                    <span aria-hidden=\"true\">&laquo;</span>\n" +
+                            "                </a>\n" +
+                            "            </li>"
+                        );
+                    } else {
+                        $("#pagination").append(
+                            "           <li class=\"page-item btn-pre\">\n" +
+                            "                <a class=\"page-link\" href=\"#\" aria-label=\"Previous\">\n" +
+                            "                    <span aria-hidden=\"true\">&laquo;</span>\n" +
+                            "                </a>\n" +
+                            "            </li>"
+                        );
+                    }
+
+
+                    for (i = 1; i <= data.data.pages; i++) {
+                        if (i == currentPageNum) {
+                            $("#pagination").append(
+                                "<li class=\"page-item active page-num\"><a class=\"page-link\" href=\"#\">" + i + "</a></li>\n"
+                            );
+                        } else {
+                            $("#pagination").append(
+                                "<li class=\"page-item page-num \"><a class=\"page-link\" href=\"#\">" + i + "</a></li>\n"
+                            );
+                        }
+                    }
+
+                    if (currentPageNum == data.data.pages) {
+                        $("#pagination").append(
+                            "           <li class=\"page-item disabled btn-next\">\n" +
+                            "               <a class=\"page-link\" href=\"#\" aria-label=\"Next\">\n" +
+                            "                   <span aria-hidden=\"true\">&raquo;</span>\n" +
+                            "               </a>\n" +
+                            "            </li>"
+                        );
+                    } else {
+                        $("#pagination").append(
+                            "           <li class=\"page-item btn-next\">\n" +
+                            "               <a class=\"page-link\" href=\"#\" aria-label=\"Next\">\n" +
+                            "                   <span aria-hidden=\"true\">&raquo;</span>\n" +
+                            "               </a>\n" +
+                            "            </li>"
+                        );
+                    }
+
+                }
+            }, "json");
+    }
+
+    $(function () {
+        getBookList(1);
+        $(document).off("click", ".page-num");
+        $(document).on("click", ".page-num", function (e) {
+            var pageNum = $(e.target).html();
+            $("#pagination").html(" ");
+            $("#tbody").html(" ");
+            getBookList(pageNum);
+        });
+
+        $(document).off("click", ".btn-pre");
+        $(document).on("click", ".btn-pre", function (e) {
+            if (currentPageNum != 1) {
+                getBookList(currentPageNum - 1);
+            }
+        });
+
+        $(document).off("click", ".btn-next");
+        $(document).on("click", ".btn-next", function (e) {
+            if (currentPageNum != pages) {
+                getBookList(currentPageNum + 1);
+            }
+        });
+
+        $(document).off("click", ".update-btn");
+        $(document).on("click", ".update-btn", function (e) {
+            var bookId = $(e.target).attr("value");
+            $.get("/book/findBookById",
+                {
+                    "bookId" : bookId
+                },
+                function(data){
+                    var book = data.data;
+                    $("#name").val(book.name);
+                    $("#author").val(book.author);
+                    $("#description").val(book.description);
+                    $("#press").val(book.press);
+                    $("#price").val(book.price);
+                    $("#originalPrice").val(book.originalPrice);
+                });
+            $('#updateModal').modal("show");
+        });
+
+
+        $(document).off("click", ".delete-btn");
+        $(document).on("click", ".delete-btn", function (e) {
+            if (confirm("确定要删除吗？")) {
+                var bookId = $(this).attr("value");
+                $.post("/admin/deleteBook",
+                    {
+                        "bookId": bookId
+                    }
+                    , function (data) {
+                        $('.toast').toast('show');
+                        $("#boast-content").html("删除成功");
+                    });
+                getBookList(currentPageNum);
+            }
+        });
+
+        $("#submit-update").click(function () {
+            alert(2);
+        });
+        $("#search-btn").click(function () {
+            var search = $("#search-text").val();
+            getBookList(1, search);
+        });
+    });
+</script>
+</html>

@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>发布</title>
+</head>
+<style>
+    .preview{
+        width: 100px;
+        margin-right: 10px;
+    }
+
+    #toast {
+        position:fixed;
+        right:20px;
+        top:60px;
+    }
+</style>
+<body>
+<div class="container">
+    <div class="row justify-content-md-center">
+        <div class="col col-6">
+            <form id="form" onsubmit="return false;">
+                <div class="form-group row">
+                    <label for="name" class="col-sm-2 col-form-label">书名</label>
+                    <div class="col-sm-10">
+                        <input type="text" name="name" class="form-control" id="name" required oninvalid="setCustomValidity('请输入书名！');" oninput="setCustomValidity('');">
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <label for="author" class="col-sm-2 col-form-label">作者</label>
+                    <div class="col-sm-10">
+                        <input type="text" name="author" class="form-control" id="author" required oninvalid="setCustomValidity('请输入作者！');" oninput="setCustomValidity('');">
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <label for="description" class="col-sm-2 col-form-label">简介</label>
+                    <div class="col-sm-10">
+                        <textarea class="form-control" name="description" id="description" required oninvalid="setCustomValidity('请输入简介！');" oninput="setCustomValidity('');"></textarea>
+<!--                        <input type="text" name="description" class="form-control" id="description" required oninvalid="setCustomValidity('请输入简介！');" oninput="setCustomValidity('');">-->
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label for="press" class="col-sm-2 col-form-label">出版社</label>
+                    <div class="col-sm-10">
+                        <input type="text" name="press" class="form-control" id="press" required oninvalid="setCustomValidity('请输入出版社！');" oninput="setCustomValidity('');">
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label for="original-price" class="col-sm-2 col-form-label">原价</label>
+                    <div class="col-sm-10">
+                        <input type="number" name="originalPrice" class="form-control" id="original-price" required oninvalid="setCustomValidity('请输入数字类型的原价！');" oninput="setCustomValidity('');">
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label for="price" class="col-sm-2 col-form-label">现价</label>
+                    <div class="col-sm-10">
+                        <input type="number"  name="price" class="form-control" id="price" required oninvalid="setCustomValidity('请输入数字类型的现价！');" oninput="setCustomValidity('');">
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <label class="col-sm-2 col-form-label" for="categories">分类</label>
+                    <div class="col-sm-10">
+                        <select class="custom-select my-1 mr-sm-2" name="cid" id="categories">
+                            <option name="cid" th:value="${category.id}" th:each="category : ${categories}" th:text="${category.name}">其它</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <label class="col-sm-2 col-form-label" for="images-input">图片</label>
+                    <div class="col-sm-10">
+                        <input type="file" name="images" id="images-input" multiple="multiple">
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <div class="col-sm-10" id="image-preview">
+
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <div class="col-sm-10">
+                        <button class="btn btn-primary" id="publish-book">确认发布</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+
+</div>
+
+<div id="toast" class="toast bg-success" role="alert" aria-live="assertive" aria-atomic="true" data-delay="2000">
+    <div class="toast-header alter">
+        <strong class="mr-auto" id="boast-content">success</strong>
+    </div>
+</div>
+
+
+
+
+
+</body>
+<script>
+    $(function () {
+
+
+
+        $("#images-input").change(function () {
+            $("#image-preview").html(" ");
+            var imageTotal = $(this)[0].files.length;
+            for (var index = 0; index < imageTotal; index++) {
+                var classValue = "img_" + index;
+                var classSelector = "." + classValue;
+                $("#image-preview").append("<img class=\"preview " + classValue + "\">");
+                $(classSelector).attr("src", URL.createObjectURL($(this)[0].files[index]));
+            }
+        });
+
+        $("#publish-book").click(function(){
+            var success = true;
+            var formObj = document.getElementById("form");
+            var formData = new FormData(formObj);
+            if (formData.get("name").length < 1){
+                success = false;
+            }
+            if (formData.get("description").length < 1){
+                success = false;
+            }
+            if (formData.get("author").length < 1){
+                success = false;
+            }
+            if (formData.get("press").length < 1){
+                success = false;
+            }
+            if (formData.get("price").length < 1){
+                success = false;
+            }
+            if (formData.get("originalPrice").length < 1){
+                success = false;
+            }
+            if (success){
+                $.ajax({
+                    type: "post",
+                    url: "/admin/book/upload",
+                    data: formData,
+                    dataType: "json",
+                    cache: false,
+                    processData: false,
+                    contentType: false,
+                    success: function (data) {
+                        console.log(data)
+                        if (data.code == '1'){
+                            formObj.reset();
+                            $('.toast').removeClass('bg-danger');
+                            $('.toast').addClass('bg-success');
+                            $('.toast').toast('show');
+                            $("#boast-content").html("发布成功");
+                        }else{
+                            $('.toast').removeClass('bg-success');
+                            $('.toast').addClass('bg-danger');
+                            $('.toast').toast('show');
+                            $("#boast-content").html(data.msg);
+                        }
+                    }
+                });
+            }
+        });
+
+    });
+</script>
+</html>

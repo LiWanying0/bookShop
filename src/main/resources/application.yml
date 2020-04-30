@@ -1,0 +1,40 @@
+server:
+  port: 8060
+
+image:
+  path: image
+  save-path: E://book_images
+spring:
+  thymeleaf:
+    mode: HTML5
+    encoding: UTF-8
+    cache: false
+#  mvc:
+#    view:
+#      prefix: /WEB-INF/jsp/
+#      suffix: .jsp
+#    static-path-pattern: /static/**
+
+  datasource:
+    driver-class-name: com.p6spy.engine.spy.P6SpyDriver
+    url: jdbc:p6spy:mysql://localhost:3306/bookshop?useUnicode=true&characterEncoding=UTF-8
+    username: root
+    password: root
+mybatis:
+  mapperLocations: classpath:mapper/*.xml  #注意：一定要对应mapper映射xml文件的所在路径
+  typeAliasesPackage: com.nit.book.shop.entity # 注意：对应实体类的路径
+  configuration:
+    map-underscore-to-camel-case: true
+logging:
+  level:
+    com.nit.book.shop.mapper: debug
+
+decorator:
+  datasource:
+    p6spy:
+      enable-logging: true
+      logging: file
+      log-file: e://spy.log
+      multiline: true
+      tracing:
+        include-parameter-values: true

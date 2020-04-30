@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nit.book.shop.mapper.BookMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.nit.book.shop.entity.Book">
+        <id column="id" property="id"/>
+        <result column="name" property="name"/>
+        <result column="cid" property="cid"/>
+        <result column="price" property="price"/>
+        <result column="originalPrice" property="originalPrice"/>
+        <result column="uid" property="uid"/>
+        <result column="author" property="author"/>
+        <result column="press" property="press"/>
+        <result column="description" property="description"/>
+        <result column="date" property="date"/>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, name, cid, price, originalPrice, uid, author, press, description, date
+    </sql>
+
+    <select id="selectBooksByCategoryLimit" resultType="com.nit.book.shop.entity.Book">
+        SELECT
+            a.*
+        FROM
+            book AS a,
+            ( SELECT GROUP_CONCAT( id ORDER BY id DESC ) AS ids FROM book GROUP BY cid ) AS b
+        WHERE
+            FIND_IN_SET( a.id, b.ids ) BETWEEN 1
+            AND #{limit}
+        ORDER BY
+        a.cid, a.date desc
+    </select>
+
+    <select id="selectBookDTOPage" resultType="com.nit.book.shop.entity.BookDTO">
+        select b.*, bi.id as imageId from book b
+        inner join book_image bi on bi.bid = b.id
+        <if test="search != null and search!= ''">
+            where name like concat('%', #{search}, '%')
+        </if>
+    </select>
+
+</mapper>

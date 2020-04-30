@@ -1,0 +1,741 @@
+<!--<html xmlns:th="http://www.thymeleaf.org">-->
+<!--<head>-->
+<!--    <title>我的书架</title>-->
+<!--    <link rel="stylesheet" type="text/css" th:href="@{/css/reset.css}">-->
+<!--    <link rel="stylesheet" type="text/css" th:href="@{/css/myBookshelf.css}">-->
+<!--</head>-->
+<!--<body>-->
+<!--&lt;!&ndash; 导航条 &ndash;&gt;-->
+<!--<nav class="navbar">-->
+<!--    <div class="nav-menu">-->
+<!--        <ul class="menu">-->
+<!--            <li><a class="active" href="/home.do">首页</a></li>-->
+<!--            <li><a href="/goBookStore.do">书籍良品</a></li>-->
+<!--            <li><a href="/goAskBookStore.do">求书区</a></li>-->
+<!--            <li><a href="#">服务区</a></li>-->
+<!--        </ul>-->
+<!--    </div>&lt;!&ndash; nav-menu &ndash;&gt;-->
+
+<!--    <div class="nav-search">-->
+<!--        <form action="searchBook.do" method="post">-->
+<!--            <input type="search" class="searchIn" name="name" placeholder="搜图书...">-->
+<!--            <button class="search-logo"><img src="/img/search2.png"></button>-->
+<!--        </form>-->
+<!--    </div>-->
+
+<!--    <div class="nav-info">-->
+<!--        <a href="#" class="username">余文乐</a>-->
+<!--        <a href="/myBookshelf.do" class="bookshelf">||&nbsp;&nbsp;&nbsp;我的书架</a>-->
+<!--        <a href="#" class="logout">[ 退 出 ]</a>-->
+<!--    </div> &lt;!&ndash; nav-info-end &ndash;&gt;-->
+<!--</nav>-->
+
+<!--&lt;!&ndash; 个人信息 &ndash;&gt;-->
+<!--<div class="person-info">-->
+<!--    <p>-->
+<!--        <a href="#" class="name">余文乐</a>-->
+<!--    </p>-->
+<!--    <input type="hidden" id="sexInput" value="m">-->
+<!--    <p>-->
+<!--        <a href="#" class="sex" id="sexText">女</a><img src="/img/girl.png" id="sex-pic">-->
+<!--    </p>-->
+<!--    <p class="set">-->
+<!--        <a href="#" class="edit">编辑个人主页</a>-->
+<!--        <img class="set-icon" src="/img/setting.png">-->
+<!--    </p>-->
+<!--    <div class="contact">-->
+<!--        <p>-->
+<!--            <span class="call-icon"></span>-->
+<!--            联&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;系：-->
+<!--            <a href="#" class="num">13712345678</a></p>-->
+<!--        <p>-->
+<!--            <span class="address-icon"></span>-->
+<!--            住&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;址：<a href="#" class="address">22#A425</a>-->
+<!--        </p>-->
+<!--        <p>-->
+<!--            <span class="major-icon"></span>-->
+<!--            年级专业：<a href="#" class="major">15级信息管理与信息系统</a>-->
+<!--        </p>-->
+<!--    </div>-->
+<!--</div>&lt;!&ndash; person-info-end &ndash;&gt;-->
+
+<!--&lt;!&ndash; 书摊和求书选项卡 &ndash;&gt;-->
+<!--<div class="card-btn">-->
+<!--    <span title="sell-book" id="sell-btn" class="active">我的书摊</span>-->
+<!--    <span title="ask-book" id="ask-btn">我的求书</span>-->
+<!--    <p class="upload-icon"></p>-->
+<!--    <a id="sell-upload" href="goUpload.do?bookType=1">上传书至书摊</a>-->
+<!--    <a id="ask-upload" href="goUpload.do?bookType=0">上传求书信息</a>-->
+<!--    <a id="delete-book" href="#">删除二手书</a>-->
+<!--</div>-->
+
+<!--&lt;!&ndash; 我的书摊 &ndash;&gt;-->
+<!--<div id="container">-->
+<!--    <div id="sell-book">-->
+<!--        <ul class="book-ul">-->
+
+<!--            <li class="book-list">-->
+<!--                <p class="book-pic">-->
+<!--                    <img src="img/book-list/article/17.jpg">-->
+<!--                </p>-->
+<!--                <h5 class="book-name">蔡康永的说话之道</h5>-->
+<!--                <form>-->
+<!--                    <input type="text" name="book-id" class="book-id" value="17">-->
+<!--                </form>-->
+<!--                <span class="delete-btn"></span>-->
+<!--                <a href="/books/renewal/17" class="edit-btn"></a>-->
+<!--                <div class="book-detail">-->
+<!--                    <p>原&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;价：<span class="original-price">￥29.0</span></p>-->
+<!--                    <p>售&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;价：<span class="book-price">￥8.8</span></p>-->
+<!--                    <p>品&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;相：<span class="book-condition">7.4新</span></p>-->
+<!--                    <p>商品描述：<span class="book-desc">蔡康永 著 / 沈阳出版社 / 2010-10 / 平装</span></p>-->
+<!--                </div>-->
+<!--            </li>-->
+
+<!--            <li class="book-list">-->
+<!--                <p class="book-pic">-->
+<!--                    <img src="img/book-list/article/15.jpg">-->
+<!--                </p>-->
+<!--                <h5 class="book-name">邓小平时代</h5>-->
+<!--                <form>-->
+<!--                    <input type="text" name="book-id" class="book-id" value="15">-->
+<!--                </form>-->
+<!--                <span class="delete-btn"></span>-->
+<!--                <a href="/books/renewal/15" class="edit-btn"></a>-->
+<!--                <div class="book-detail">-->
+<!--                    <p>原&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;价：<span class="original-price">￥40.0</span></p>-->
+<!--                    <p>售&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;价：<span class="book-price">￥32.0</span></p>-->
+<!--                    <p>品&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;相：<span class="book-condition">8.0新</span></p>-->
+<!--                    <p>商品描述：<span class="book-desc">傅高义 著 / 生活·读书·新知三联书店 / 2013-01 / 平装</span></p>-->
+<!--                </div>-->
+<!--            </li>-->
+
+<!--            <li class="book-list">-->
+<!--                <p class="book-pic">-->
+<!--                    <img src="img/book-list/article/14.jpg">-->
+<!--                </p>-->
+<!--                <h5 class="book-name">朱镕基答记者问</h5>-->
+<!--                <form>-->
+<!--                    <input type="text" name="book-id" class="book-id" value="14">-->
+<!--                </form>-->
+<!--                <span class="delete-btn"></span>-->
+<!--                <a href="/books/renewal/14" class="edit-btn"></a>-->
+<!--                <div class="book-detail">-->
+<!--                    <p>原&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;价：<span class="original-price">￥59.0</span></p>-->
+<!--                    <p>售&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;价：<span class="book-price">￥9.0</span></p>-->
+<!--                    <p>品&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;相：<span class="book-condition">5.0新</span></p>-->
+<!--                    <p>商品描述：<span class="book-desc">《朱镕基答记者问》编辑组 著 / 人民出版社 / 2009-08 / 平装</span></p>-->
+<!--                </div>-->
+<!--            </li>-->
+
+<!--            <li class="book-list">-->
+<!--                <p class="book-pic">-->
+<!--                    <img src="img/book-list/article/13.jpg">-->
+<!--                </p>-->
+<!--                <h5 class="book-name">史记</h5>-->
+<!--                <form>-->
+<!--                    <input type="text" name="book-id" class="book-id" value="13">-->
+<!--                </form>-->
+<!--                <span class="delete-btn"></span>-->
+<!--                <a href="/books/renewal/13" class="edit-btn"></a>-->
+<!--                <div class="book-detail">-->
+<!--                    <p>原&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;价：<span class="original-price">￥99.0</span></p>-->
+<!--                    <p>售&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;价：<span class="book-price">￥42.0</span></p>-->
+<!--                    <p>品&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;相：<span class="book-condition">8.5新</span></p>-->
+<!--                    <p>商品描述：<span class="book-desc">司马迁 著 / 光明日报出版社 / 2015-04 / 精装</span></p>-->
+<!--                </div>-->
+<!--            </li>-->
+
+<!--            <li class="book-list">-->
+<!--                <p class="book-pic">-->
+<!--                    <img src="img/book-list/article/11.jpg">-->
+<!--                </p>-->
+<!--                <h5 class="book-name">Python基础教程</h5>-->
+<!--                <form>-->
+<!--                    <input type="text" name="book-id" class="book-id" value="12">-->
+<!--                </form>-->
+<!--                <span class="delete-btn"></span>-->
+<!--                <a href="/books/renewal/12" class="edit-btn"></a>-->
+<!--                <div class="book-detail">-->
+<!--                    <p>原&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;价：<span class="original-price">￥49.0</span></p>-->
+<!--                    <p>售&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;价：<span class="book-price">￥34.0</span></p>-->
+<!--                    <p>品&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;相：<span class="book-condition">7.5新</span></p>-->
+<!--                    <p>商品描述：<span class="book-desc">python</span></p>-->
+<!--                </div>-->
+<!--            </li>-->
+
+<!--            <li class="book-list">-->
+<!--                <p class="book-pic">-->
+<!--                    <img src="img/book-list/article/10.jpg">-->
+<!--                </p>-->
+<!--                <h5 class="book-name">算法</h5>-->
+<!--                <form>-->
+<!--                    <input type="text" name="book-id" class="book-id" value="11">-->
+<!--                </form>-->
+<!--                <span class="delete-btn"></span>-->
+<!--                <a href="/books/renewal/11" class="edit-btn"></a>-->
+<!--                <div class="book-detail">-->
+<!--                    <p>原&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;价：<span class="original-price">￥89.9</span></p>-->
+<!--                    <p>售&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;价：<span class="book-price">￥28.0</span></p>-->
+<!--                    <p>品&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;相：<span class="book-condition">8.6新</span></p>-->
+<!--                    <p>商品描述：<span class="book-desc">算法书啃不下去了 我已经放弃了</span></p>-->
+<!--                </div>-->
+<!--            </li>-->
+
+<!--            <li class="book-list">-->
+<!--                <p class="book-pic">-->
+<!--                    <img src="img/book-list/article/8.jpg">-->
+<!--                </p>-->
+<!--                <h5 class="book-name">Spring实战</h5>-->
+<!--                <form>-->
+<!--                    <input type="text" name="book-id" class="book-id" value="9">-->
+<!--                </form>-->
+<!--                <span class="delete-btn"></span>-->
+<!--                <a href="/books/renewal/9" class="edit-btn"></a>-->
+<!--                <div class="book-detail">-->
+<!--                    <p>原&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;价：<span class="original-price">￥79.0</span></p>-->
+<!--                    <p>售&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;价：<span class="book-price">￥33.6</span></p>-->
+<!--                    <p>品&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;相：<span class="book-condition">9.0新</span></p>-->
+<!--                    <p>商品描述：<span class="book-desc">Java必看经典书籍！</span></p>-->
+<!--                </div>-->
+<!--            </li>-->
+
+<!--            <li class="book-list">-->
+<!--                <p class="book-pic">-->
+<!--                    <img src="img/book-list/article/79.jpg">-->
+<!--                </p>-->
+<!--                <h5 class="book-name">雅思王听力语料库</h5>-->
+<!--                <form>-->
+<!--                    <input type="text" name="book-id" class="book-id" value="83">-->
+<!--                </form>-->
+<!--                <span class="delete-btn"></span>-->
+<!--                <a href="/books/renewal/83" class="edit-btn"></a>-->
+<!--                <div class="book-detail">-->
+<!--                    <p>原&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;价：<span class="original-price">￥37.5</span></p>-->
+<!--                    <p>售&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;价：<span class="book-price">￥16.0</span></p>-->
+<!--                    <p>品&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;相：<span class="book-condition">8.0新</span></p>-->
+<!--                    <p>商品描述：<span class="book-desc">接近全新啦</span></p>-->
+<!--                </div>-->
+<!--            </li>-->
+
+<!--            <li class="book-list">-->
+<!--                <p class="book-pic">-->
+<!--                    <img src="img/book-list/article/78.jpg">-->
+<!--                </p>-->
+<!--                <h5 class="book-name">顾家北手把手教你雅思写作</h5>-->
+<!--                <form>-->
+<!--                    <input type="text" name="book-id" class="book-id" value="82">-->
+<!--                </form>-->
+<!--                <span class="delete-btn"></span>-->
+<!--                <a href="/books/renewal/82" class="edit-btn"></a>-->
+<!--                <div class="book-detail">-->
+<!--                    <p>原&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;价：<span class="original-price">￥55.6</span></p>-->
+<!--                    <p>售&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;价：<span class="book-price">￥20.0</span></p>-->
+<!--                    <p>品&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;相：<span class="book-condition">8.0新</span></p>-->
+<!--                    <p>商品描述：<span class="book-desc">有一点点笔记</span></p>-->
+<!--                </div>-->
+<!--            </li>-->
+
+<!--            <li class="book-list">-->
+<!--                <p class="book-pic">-->
+<!--                    <img src="img/book-list/article/77.jpg">-->
+<!--                </p>-->
+<!--                <h5 class="book-name">剑桥雅思11</h5>-->
+<!--                <form>-->
+<!--                    <input type="text" name="book-id" class="book-id" value="81">-->
+<!--                </form>-->
+<!--                <span class="delete-btn"></span>-->
+<!--                <a href="/books/renewal/81" class="edit-btn"></a>-->
+<!--                <div class="book-detail">-->
+<!--                    <p>原&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;价：<span class="original-price">￥8.0</span></p>-->
+<!--                    <p>售&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;价：<span class="book-price">￥15.0</span></p>-->
+<!--                    <p>品&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;相：<span class="book-condition">9.9新</span></p>-->
+<!--                    <p>商品描述：<span class="book-desc">全新没写过的</span></p>-->
+<!--                </div>-->
+<!--            </li>-->
+
+<!--            <li class="book-list">-->
+<!--                <p class="book-pic">-->
+<!--                    <img src="img/book-list/article/76.jpg">-->
+<!--                </p>-->
+<!--                <h5 class="book-name">剑桥雅思真题9</h5>-->
+<!--                <form>-->
+<!--                    <input type="text" name="book-id" class="book-id" value="80">-->
+<!--                </form>-->
+<!--                <span class="delete-btn"></span>-->
+<!--                <a href="/books/renewal/80" class="edit-btn"></a>-->
+<!--                <div class="book-detail">-->
+<!--                    <p>原&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;价：<span class="original-price">￥15.0</span></p>-->
+<!--                    <p>售&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;价：<span class="book-price">￥5.0</span></p>-->
+<!--                    <p>品&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;相：<span class="book-condition">9.9新</span></p>-->
+<!--                    <p>商品描述：<span class="book-desc">全新没写过，已分手雅思</span></p>-->
+<!--                </div>-->
+<!--            </li>-->
+
+<!--            <li class="book-list">-->
+<!--                <p class="book-pic">-->
+<!--                    <img src="img/book-list/article/58.jpg">-->
+<!--                </p>-->
+<!--                <h5 class="book-name">精通Spring4.x</h5>-->
+<!--                <form>-->
+<!--                    <input type="text" name="book-id" class="book-id" value="62">-->
+<!--                </form>-->
+<!--                <span class="delete-btn"></span>-->
+<!--                <a href="/books/renewal/62" class="edit-btn"></a>-->
+<!--                <div class="book-detail">-->
+<!--                    <p>原&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;价：<span class="original-price">￥79.0</span></p>-->
+<!--                    <p>售&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;价：<span class="book-price">￥30.0</span></p>-->
+<!--                    <p>品&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;相：<span class="book-condition">9.9新</span></p>-->
+<!--                    <p>商品描述：<span class="book-desc">保证正版</span></p>-->
+<!--                </div>-->
+<!--            </li>-->
+
+<!--            <li class="book-list">-->
+<!--                <p class="book-pic">-->
+<!--                    <img src="img/book-list/article/7.jpg">-->
+<!--                </p>-->
+<!--                <h5 class="book-name">恶意</h5>-->
+<!--                <form>-->
+<!--                    <input type="text" name="book-id" class="book-id" value="3">-->
+<!--                </form>-->
+<!--                <span class="delete-btn"></span>-->
+<!--                <a href="/books/renewal/3" class="edit-btn"></a>-->
+<!--                <div class="book-detail">-->
+<!--                    <p>原&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;价：<span class="original-price">￥28.0</span></p>-->
+<!--                    <p>售&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;价：<span class="book-price">￥9.9</span></p>-->
+<!--                    <p>品&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;相：<span class="book-condition">9.0新</span></p>-->
+<!--                    <p>商品描述：<span class="book-desc">书架太多书了 出给东野圭吾书迷</span></p>-->
+<!--                </div>-->
+<!--            </li>-->
+
+<!--            <li class="book-list">-->
+<!--                <p class="book-pic">-->
+<!--                    <img src="img/book-list/article/12.jpg">-->
+<!--                </p>-->
+<!--                <h5 class="book-name">明朝那些事儿（全9册）</h5>-->
+<!--                <form>-->
+<!--                    <input type="text" name="book-id" class="book-id" value="2">-->
+<!--                </form>-->
+<!--                <span class="delete-btn"></span>-->
+<!--                <a href="/books/renewal/2" class="edit-btn"></a>-->
+<!--                <div class="book-detail">-->
+<!--                    <p>原&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;价：<span class="original-price">￥178.0</span></p>-->
+<!--                    <p>售&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;价：<span class="book-price">￥99.0</span></p>-->
+<!--                    <p>品&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;相：<span class="book-condition">8.5新</span></p>-->
+<!--                    <p>商品描述：<span class="book-desc">没买多久，急用钱，低价甩</span></p>-->
+<!--                </div>-->
+<!--            </li>-->
+
+<!--            <li class="book-list">-->
+<!--                <p class="book-pic">-->
+<!--                    <img src="img/book-list/article/6.jpg">-->
+<!--                </p>-->
+<!--                <h5 class="book-name">Java编程思想</h5>-->
+<!--                <form>-->
+<!--                    <input type="text" name="book-id" class="book-id" value="1">-->
+<!--                </form>-->
+<!--                <span class="delete-btn"></span>-->
+<!--                <a href="/books/renewal/1" class="edit-btn"></a>-->
+<!--                <div class="book-detail">-->
+<!--                    <p>原&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;价：<span class="original-price">￥108.0</span></p>-->
+<!--                    <p>售&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;价：<span class="book-price">￥52.0</span></p>-->
+<!--                    <p>品&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;相：<span class="book-condition">9.5新</span></p>-->
+<!--                    <p>商品描述：<span class="book-desc">四大名著啊！能不看吗</span></p>-->
+<!--                </div>-->
+<!--            </li>-->
+
+<!--        </ul>-->
+<!--    </div> &lt;!&ndash; sell-book-end &ndash;&gt;-->
+
+<!--    &lt;!&ndash; 我的求书 &ndash;&gt;-->
+<!--    <div id="ask-book">-->
+<!--        <ul class="book-ul">-->
+
+<!--        </ul>-->
+<!--    </div>&lt;!&ndash; ask-book-end&ndash;&gt;-->
+<!--</div> &lt;!&ndash; container-end &ndash;&gt;-->
+
+<!--<footer>-->
+<!--    <a href="#">©2018-2019 二手书交易</a>-->
+<!--    <a href="#">意见反馈&nbsp;&nbsp;&nbsp;联系我们&nbsp;&nbsp;&nbsp;隐私权声明&nbsp;&nbsp;&nbsp;使用条款</a>-->
+<!--</footer>-->
+
+<!--&lt;!&ndash; javascript- &ndash;&gt;-->
+<!--<script type="text/javascript" th:src="@{/js/jquery-3.3.1.js}"></script>-->
+<!--<script type="text/javascript" th:src="@{/js/myBookshelf.js}"></script>-->
+<!--<script type="text/javascript" th:src="@{/js/session.js}"></script>-->
+
+<!--</body>-->
+<!--</html>-->
+
+
+
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>我的书架</title>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/reset.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/myBookshelf.css}">
+</head>
+<body>
+<!-- 导航条 -->
+<nav class="navbar">
+    <div class="nav-menu">
+        <ul class="menu">
+            <li><a class="active" href="/home.do">首页</a></li>
+            <li><a href="/goBookStore.do">书籍良品</a></li>
+            <li><a href="/goAskBookStore.do">求书区</a></li>
+            <li><a href="#">服务区</a></li>
+        </ul>
+    </div><!-- nav-menu -->
+
+    <div class="nav-search">
+        <form action="searchBook.do" method="post">
+            <input type="search" class="searchIn" name="name" placeholder="搜图书...">
+            <button class="search-logo"><img src="/img/search2.png"></button>
+        </form>
+    </div>
+
+    <div class="nav-info">
+        <a href="#" class="username">余文乐</a>
+        <a href="/myBookshelf.do" class="bookshelf">||&nbsp;&nbsp;&nbsp;我的书架</a>
+        <a href="#" class="logout">[ 退 出 ]</a>
+    </div> <!-- nav-info-end -->
+</nav>
+
+<!-- 个人信息 -->
+<div class="person-info">
+    <p>
+        <a href="#" class="name">余文乐</a>
+    </p>
+    <input type="hidden" id="sexInput" value="m">
+    <p>
+        <a href="#" class="sex" id="sexText">女</a><img src="/img/girl.png" id="sex-pic">
+    </p>
+    <p class="set">
+        <a href="#" class="edit">编辑个人主页</a>
+        <img class="set-icon" src="/img/setting.png">
+    </p>
+    <div class="contact">
+        <p>
+            <span class="call-icon"></span>
+            联&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;系：
+            <a href="#" class="num">13712345678</a></p>
+        <p>
+            <span class="address-icon"></span>
+            住&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;址：<a href="#" class="address">22#A425</a>
+        </p>
+        <p>
+            <span class="major-icon"></span>
+            年级专业：<a href="#" class="major">15级信息管理与信息系统</a>
+        </p>
+    </div>
+</div><!-- person-info-end -->
+
+<!-- 书摊和求书选项卡 -->
+<div class="card-btn">
+    <span title="sell-book" id="sell-btn" class="active">我的书摊</span>
+    <span title="ask-book" id="ask-btn">我的求书</span>
+    <p class="upload-icon"></p>
+    <a id="sell-upload" href="goUpload.do?bookType=1">上传书至书摊</a>
+    <a id="ask-upload" href="goUpload.do?bookType=0">上传求书信息</a>
+    <a id="delete-book" href="#">删除二手书</a>
+</div>
+
+<!-- 我的书摊 -->
+<div id="container">
+    <div id="sell-book">
+        <ul class="book-ul">
+
+            <li class="book-list">
+                <p class="book-pic">
+                    <img src="img/book-list/article/17.jpg">
+                </p>
+                <h5 class="book-name">è¡åº·æ°¸çè¯´è¯ä¹é2</h5>
+                <form>
+                    <input type="text" name="book-id" class="book-id" value="17">
+                </form>
+                <span class="delete-btn"></span>
+                <a href="/books/renewal/17" class="edit-btn"></a>
+                <div class="book-detail">
+                    <p>原&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;价：<span class="original-price">￥29.0</span></p>
+                    <p>售&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;价：<span class="book-price">￥8.8</span></p>
+                    <p>品&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;相：<span class="book-condition">7.4新</span></p>
+                    <p>商品描述：<span class="book-desc">è¡åº·æ°¸ è / æ²é³åºçç¤¾ / 2010-10 / å¹³è£</span></p>
+                </div>
+            </li>
+
+            <li class="book-list">
+                <p class="book-pic">
+                    <img src="img/book-list/article/15.jpg">
+                </p>
+                <h5 class="book-name">邓小平时代</h5>
+                <form>
+                    <input type="text" name="book-id" class="book-id" value="15">
+                </form>
+                <span class="delete-btn"></span>
+                <a href="/books/renewal/15" class="edit-btn"></a>
+                <div class="book-detail">
+                    <p>原&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;价：<span class="original-price">￥40.0</span></p>
+                    <p>售&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;价：<span class="book-price">￥32.0</span></p>
+                    <p>品&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;相：<span class="book-condition">8.0新</span></p>
+                    <p>商品描述：<span class="book-desc">傅高义 著 / 生活·读书·新知三联书店 / 2013-01 / 平装</span></p>
+                </div>
+            </li>
+
+            <li class="book-list">
+                <p class="book-pic">
+                    <img src="img/book-list/article/14.jpg">
+                </p>
+                <h5 class="book-name">朱镕基答记者问</h5>
+                <form>
+                    <input type="text" name="book-id" class="book-id" value="14">
+                </form>
+                <span class="delete-btn"></span>
+                <a href="/books/renewal/14" class="edit-btn"></a>
+                <div class="book-detail">
+                    <p>原&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;价：<span class="original-price">￥59.0</span></p>
+                    <p>售&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;价：<span class="book-price">￥9.0</span></p>
+                    <p>品&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;相：<span class="book-condition">5.0新</span></p>
+                    <p>商品描述：<span class="book-desc">《朱镕基答记者问》编辑组 著 / 人民出版社 / 2009-08 / 平装</span></p>
+                </div>
+            </li>
+
+            <li class="book-list">
+                <p class="book-pic">
+                    <img src="img/book-list/article/13.jpg">
+                </p>
+                <h5 class="book-name">史记</h5>
+                <form>
+                    <input type="text" name="book-id" class="book-id" value="13">
+                </form>
+                <span class="delete-btn"></span>
+                <a href="/books/renewal/13" class="edit-btn"></a>
+                <div class="book-detail">
+                    <p>原&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;价：<span class="original-price">￥99.0</span></p>
+                    <p>售&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;价：<span class="book-price">￥42.0</span></p>
+                    <p>品&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;相：<span class="book-condition">8.5新</span></p>
+                    <p>商品描述：<span class="book-desc">司马迁 著 / 光明日报出版社 / 2015-04 / 精装</span></p>
+                </div>
+            </li>
+
+            <li class="book-list">
+                <p class="book-pic">
+                    <img src="img/book-list/article/11.jpg">
+                </p>
+                <h5 class="book-name">Python基础教程</h5>
+                <form>
+                    <input type="text" name="book-id" class="book-id" value="12">
+                </form>
+                <span class="delete-btn"></span>
+                <a href="/books/renewal/12" class="edit-btn"></a>
+                <div class="book-detail">
+                    <p>原&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;价：<span class="original-price">￥49.0</span></p>
+                    <p>售&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;价：<span class="book-price">￥34.0</span></p>
+                    <p>品&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;相：<span class="book-condition">7.5新</span></p>
+                    <p>商品描述：<span class="book-desc">python</span></p>
+                </div>
+            </li>
+
+            <li class="book-list">
+                <p class="book-pic">
+                    <img src="img/book-list/article/10.jpg">
+                </p>
+                <h5 class="book-name">算法</h5>
+                <form>
+                    <input type="text" name="book-id" class="book-id" value="11">
+                </form>
+                <span class="delete-btn"></span>
+                <a href="/books/renewal/11" class="edit-btn"></a>
+                <div class="book-detail">
+                    <p>原&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;价：<span class="original-price">￥89.9</span></p>
+                    <p>售&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;价：<span class="book-price">￥28.0</span></p>
+                    <p>品&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;相：<span class="book-condition">8.6新</span></p>
+                    <p>商品描述：<span class="book-desc">算法书啃不下去了 我已经放弃了</span></p>
+                </div>
+            </li>
+
+            <li class="book-list">
+                <p class="book-pic">
+                    <img src="img/book-list/article/8.jpg">
+                </p>
+                <h5 class="book-name">Spring实战</h5>
+                <form>
+                    <input type="text" name="book-id" class="book-id" value="9">
+                </form>
+                <span class="delete-btn"></span>
+                <a href="/books/renewal/9" class="edit-btn"></a>
+                <div class="book-detail">
+                    <p>原&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;价：<span class="original-price">￥79.0</span></p>
+                    <p>售&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;价：<span class="book-price">￥33.6</span></p>
+                    <p>品&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;相：<span class="book-condition">9.0新</span></p>
+                    <p>商品描述：<span class="book-desc">Java必看经典书籍！</span></p>
+                </div>
+            </li>
+
+            <li class="book-list">
+                <p class="book-pic">
+                    <img src="img/book-list/article/79.jpg">
+                </p>
+                <h5 class="book-name">雅思王听力语料库</h5>
+                <form>
+                    <input type="text" name="book-id" class="book-id" value="83">
+                </form>
+                <span class="delete-btn"></span>
+                <a href="/books/renewal/83" class="edit-btn"></a>
+                <div class="book-detail">
+                    <p>原&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;价：<span class="original-price">￥37.5</span></p>
+                    <p>售&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;价：<span class="book-price">￥16.0</span></p>
+                    <p>品&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;相：<span class="book-condition">8.0新</span></p>
+                    <p>商品描述：<span class="book-desc">接近全新啦</span></p>
+                </div>
+            </li>
+
+            <li class="book-list">
+                <p class="book-pic">
+                    <img src="img/book-list/article/78.jpg">
+                </p>
+                <h5 class="book-name">顾家北手把手教你雅思写作</h5>
+                <form>
+                    <input type="text" name="book-id" class="book-id" value="82">
+                </form>
+                <span class="delete-btn"></span>
+                <a href="/books/renewal/82" class="edit-btn"></a>
+                <div class="book-detail">
+                    <p>原&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;价：<span class="original-price">￥55.6</span></p>
+                    <p>售&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;价：<span class="book-price">￥20.0</span></p>
+                    <p>品&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;相：<span class="book-condition">8.0新</span></p>
+                    <p>商品描述：<span class="book-desc">有一点点笔记</span></p>
+                </div>
+            </li>
+
+            <li class="book-list">
+                <p class="book-pic">
+                    <img src="img/book-list/article/77.jpg">
+                </p>
+                <h5 class="book-name">剑桥雅思11</h5>
+                <form>
+                    <input type="text" name="book-id" class="book-id" value="81">
+                </form>
+                <span class="delete-btn"></span>
+                <a href="/books/renewal/81" class="edit-btn"></a>
+                <div class="book-detail">
+                    <p>原&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;价：<span class="original-price">￥8.0</span></p>
+                    <p>售&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;价：<span class="book-price">￥15.0</span></p>
+                    <p>品&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;相：<span class="book-condition">9.9新</span></p>
+                    <p>商品描述：<span class="book-desc">全新没写过的</span></p>
+                </div>
+            </li>
+
+            <li class="book-list">
+                <p class="book-pic">
+                    <img src="img/book-list/article/76.jpg">
+                </p>
+                <h5 class="book-name">剑桥雅思真题9</h5>
+                <form>
+                    <input type="text" name="book-id" class="book-id" value="80">
+                </form>
+                <span class="delete-btn"></span>
+                <a href="/books/renewal/80" class="edit-btn"></a>
+                <div class="book-detail">
+                    <p>原&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;价：<span class="original-price">￥15.0</span></p>
+                    <p>售&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;价：<span class="book-price">￥5.0</span></p>
+                    <p>品&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;相：<span class="book-condition">9.9新</span></p>
+                    <p>商品描述：<span class="book-desc">全新没写过，已分手雅思</span></p>
+                </div>
+            </li>
+
+            <li class="book-list">
+                <p class="book-pic">
+                    <img src="img/book-list/article/58.jpg">
+                </p>
+                <h5 class="book-name">精通Spring4.x</h5>
+                <form>
+                    <input type="text" name="book-id" class="book-id" value="62">
+                </form>
+                <span class="delete-btn"></span>
+                <a href="/books/renewal/62" class="edit-btn"></a>
+                <div class="book-detail">
+                    <p>原&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;价：<span class="original-price">￥79.0</span></p>
+                    <p>售&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;价：<span class="book-price">￥30.0</span></p>
+                    <p>品&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;相：<span class="book-condition">9.9新</span></p>
+                    <p>商品描述：<span class="book-desc">保证正版</span></p>
+                </div>
+            </li>
+
+            <li class="book-list">
+                <p class="book-pic">
+                    <img src="img/book-list/article/7.jpg">
+                </p>
+                <h5 class="book-name">恶意</h5>
+                <form>
+                    <input type="text" name="book-id" class="book-id" value="3">
+                </form>
+                <span class="delete-btn"></span>
+                <a href="/books/renewal/3" class="edit-btn"></a>
+                <div class="book-detail">
+                    <p>原&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;价：<span class="original-price">￥28.0</span></p>
+                    <p>售&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;价：<span class="book-price">￥9.9</span></p>
+                    <p>品&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;相：<span class="book-condition">9.0新</span></p>
+                    <p>商品描述：<span class="book-desc">书架太多书了 出给东野圭吾书迷</span></p>
+                </div>
+            </li>
+
+            <li class="book-list">
+                <p class="book-pic">
+                    <img src="img/book-list/article/12.jpg">
+                </p>
+                <h5 class="book-name">明朝那些事儿（全9册）</h5>
+                <form>
+                    <input type="text" name="book-id" class="book-id" value="2">
+                </form>
+                <span class="delete-btn"></span>
+                <a href="/books/renewal/2" class="edit-btn"></a>
+                <div class="book-detail">
+                    <p>原&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;价：<span class="original-price">￥178.0</span></p>
+                    <p>售&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;价：<span class="book-price">￥99.0</span></p>
+                    <p>品&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;相：<span class="book-condition">8.5新</span></p>
+                    <p>商品描述：<span class="book-desc">没买多久，急用钱，低价甩</span></p>
+                </div>
+            </li>
+
+            <li class="book-list">
+                <p class="book-pic">
+                    <img src="img/book-list/article/6.jpg">
+                </p>
+                <h5 class="book-name">Java编程思想</h5>
+                <form>
+                    <input type="text" name="book-id" class="book-id" value="1">
+                </form>
+                <span class="delete-btn"></span>
+                <a href="/books/renewal/1" class="edit-btn"></a>
+                <div class="book-detail">
+                    <p>原&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;价：<span class="original-price">￥108.0</span></p>
+                    <p>售&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;价：<span class="book-price">￥52.0</span></p>
+                    <p>品&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;相：<span class="book-condition">9.5新</span></p>
+                    <p>商品描述：<span class="book-desc">四大名著啊！能不看吗</span></p>
+                </div>
+            </li>
+
+        </ul>
+    </div> <!-- sell-book-end -->
+
+    <!-- 我的求书 -->
+    <div id="ask-book">
+        <ul class="book-ul">
+
+        </ul>
+    </div><!-- ask-book-end-->
+</div> <!-- container-end -->
+
+<footer>
+    <a href="#">©2018-2019 二手书交易</a>
+    <a href="#">意见反馈&nbsp;&nbsp;&nbsp;联系我们&nbsp;&nbsp;&nbsp;隐私权声明&nbsp;&nbsp;&nbsp;使用条款</a>
+</footer>
+
+<!-- javascript- -->
+<script type="text/javascript" src="/static/js/jquery-3.3.1.js"></script>
+<script type="text/javascript" src="/js/myBookshelf.js"></script>
+<script type="text/javascript" src="/js/session.js"></script>
+
+</body>
+</html>

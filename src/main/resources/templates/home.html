@@ -1,0 +1,120 @@
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>校园二手书交易平台</title>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/home.css}">
+</head>
+<body>
+    <!-- 导航 -->
+    <nav class="navbar">
+        <div class="nav-info">
+            <a href="#" class="username" th:text="${user}"></a>
+            <a href="/myBookshelf.do" class="bookshelf">||&nbsp;&nbsp;&nbsp;我的书架</a>
+            <a href="#" class="logout">[ 退 出 ]</a>
+        </div> <!-- nav-info -->
+        <form action="searchBook.do" method="post">
+        <div class="nav-search">
+            <a href="/home.do"><img class="logo" th:src="@{/img/logo2.png}"></a>
+            <div class="search-form">
+                <input id="search-input" name="name" type="search" class="searchIn" placeholder="搜图书...">
+                <a href="#" class="search-logo">| &nbsp;<img th:src="@{/img/search.png}"></a>
+                <button type="submit" id="search-button" class="searchBtn">搜索</button>
+            </div>
+        </div><!--  nav-search -->
+        </form>
+        <ul class="menu">
+            <li><a class="active" href="home.do">首页</a></li>
+            <li><a href="/goBookStore.do">书籍良品</a></li>
+            <li><a href="/goAskBookStore.do">求书区</a></li>
+            <li><a href="#">服务区</a></li>
+        </ul>
+    </nav>
+
+    <!-- 轮播 -->
+    <div class="carousel">
+        <div class="book-guide">
+            <h4>图书导航</h4>
+            <ul class="book-class" th:each="category : ${categories}">
+                    <li >
+                        <a th:href="@{#book-part-{key}(key=${category.key})}" th:title="${category.key}"  th:text="${category.value}"></a>
+                    </li>
+            </ul>
+        </div>
+        <div class="slider">
+            <div class="slider-img">
+                <ul class="slider-img-ul">
+                    <li><img th:src="@{/img/carousel/5.jpg}"></li>
+                    <li><img th:src="@{/img/carousel/1.jpg}"></li>
+                    <li><img th:src="@{/img/carousel/2.jpg}"></li>
+                    <li><img th:src="@{/img/carousel/3.jpg}"></li>
+                    <li><img th:src="@{/img/carousel/4.jpg}"></li>
+                    <li><img th:src="@{/img/carousel/5.jpg}"></li>
+                    <li><img th:src="@{/img/carousel/1.jpg}"></li>
+                </ul>
+            </div>
+        </div><!-- 	slider -->
+    </div><!-- carousel -->
+
+    <!-- 图书分类 -->
+    <div id="container" >
+        <div class="book-part" th:id="'book-part-'+${books.value[0].category.id}" th:each="books : ${booksMap}">
+            <h3 class="book-title"><a th:text="${books.key.name}" href="#">| ${books.key.getName()}</a></h3>
+            <a class="more" th:href="@{/goBookStore.do(id=${books.value[0].category.id})}"> > > 更多</a>
+            <ul class="book-lists">
+                <li class="book-list" th:each="book : ${books.value}">
+                    <a th:href="@{/books/{id}(id=${book.id})}" class="book-pic" target="_blank">
+                        <img th:src="@{/img/book-list/article/{id}.jpg(id=${book.bookImage.id})}">
+                    </a>
+                    <a href="#" class="book-info">
+                        <h5 class="book-name" th:text="${book.name}"></h5>
+                        <span class="book-detail" th:text="${book.description}"></span>
+                    </a>
+                    <span class="book-price" th:text="${book.price}">
+                            <a href="#" class="book-buy">立即下单</a>
+                        </span>
+                </li>
+            </ul><!--  book-list end -->
+        </div><!--  book-part end -->
+    </div> <!-- container end-->
+
+
+    <footer>
+        <a href="#">©2018-2019 二手书交易</a>
+        <a href="#">意见反馈&nbsp;&nbsp;&nbsp;联系我们&nbsp;&nbsp;&nbsp;隐私权声明&nbsp;&nbsp;&nbsp;使用条款</a>
+    </footer>
+
+    <script type="text/javascript" th:src="@{/static/js/jquery-3.3.1.js}"></script>
+    <script type="text/javascript" th:src="@{/js/xSlider.js}"></script>
+    <script type="text/javascript" th:src="@{/js/session.js}"></script>
+    <script type="text/javascript">
+        $(function(){
+
+            /*$('#search-button').click(function (event) {
+                var keyword = $('#search-input').val();
+                var book_ = {"name":keyword};
+                var jsonData = JSON.stringify(book_);
+                var flag = "";
+                $.ajax({
+                    type:"POST",
+                    url:"searchBook.do",
+                    async:false,
+                    dataType:"json",
+                    contentType:"application/json;charset=UTF-8",
+                    data:jsonData,
+                    success:function (msg) {
+                        flag = msg;
+                    }
+                });
+
+            });*/
+
+            $(".book-class li a").on("click",function(){
+                var classId = $(this).prop("title");
+                console.log(classId);
+                var classTop =  $("#container").find(("#"+classId)).offset().top;
+                $("html,body").animate({scrollTop:classTop+ "px"}, 500);
+            });
+        })
+    </script>
+
+</body>
+</html>
