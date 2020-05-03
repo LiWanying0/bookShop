@@ -21,23 +21,23 @@ public class MessageController {
     private MessageService messageService;
 
 
-//    @GetMapping("")
-//    @ResponseBody
-//    public JsonResult<IPage<Message>> findMessages(
-//        @RequestParam(value = "pageNum", required = false, defaultValue = "1")Integer pageNum,
-//        @RequestParam(value = "type", required = false, defaultValue = "1")Integer type
-//    ){
-//        return messageService.findMessages(pageNum, type);
-//    }
-
     @GetMapping("")
     @ResponseBody
-    public JsonResult<IPage<BookMessageAndCommentVO>> findMessagesVO(
+    public JsonResult<IPage<Message>> findMessages(
         @RequestParam(value = "pageNum", required = false, defaultValue = "1")Integer pageNum,
         @RequestParam(value = "type", required = false, defaultValue = "1")Integer type
     ){
-        return messageService.findMessagesVO(pageNum, type);
+        return messageService.findMessages(pageNum, type);
     }
+
+//    @GetMapping("")
+//    @ResponseBody
+//    public JsonResult<IPage<BookMessageAndCommentVO>> findMessagesVO(
+//        @RequestParam(value = "pageNum", required = false, defaultValue = "1")Integer pageNum,
+//        @RequestParam(value = "type", required = false, defaultValue = "1")Integer type
+//    ){
+//        return messageService.findMessagesVO(pageNum, type);
+//    }
 
 
     @PostMapping("/reply")

@@ -61,6 +61,16 @@ $(function(){
         );
     });
 
+    $("#btn-publish-purchase").click(function(){
+        $("#admin-content").html(" ");
+        $.get("/admin/publishPurchase", {},
+            function (data, textStatus, jqXHR) {
+                $("#admin-content").html(data);
+            },
+            "html"
+        );
+    });
+
     $("#btn-purchase").click(function(){
         $("#admin-content").html(" ");
         $.get("/admin/purchase", {},

@@ -96,49 +96,25 @@
                 }
                 $("#pagination").html(" ");
                 $("#card-body").html(" ");
-                var message = "    <div id=\"accordion\">";
                 $.each(data.data.records, function (i, item) {
-                    message = message + "        <div class=\"card\">\n" +
-                        "            <div class=\"card-header\" id=\"heading"+i+"\">\n" +
-                        "                <h5 class=\"mb-0\">\n" +
-                        "                    <button class=\"btn btn-link collapsed\" data-toggle=\"collapse\" data-target=\"#collapse"+i+"\"\n" +
-                        "                            aria-expanded=\"false\" aria-controls=\"collapse"+i+"\">\n" +
-                        item.commentDetails.bname +
-                        "                    </button>\n" +
-                        "                </h5>\n" +
-                        "                <h5 class=\"mb-0\">\n" +
-                        "                    <button class=\"btn btn-link collapsed\" data-toggle=\"collapse\" data-target=\"#collapse"+i+"\"\n" +
-                        "                            aria-expanded=\"false\" aria-controls=\"collapse"+i+"\">\n" +
-                        item.commentDetails.sender + ":" + item.commentDetails.content +
-                        "                    </button>\n" +
-                        "                </h5>\n" +
-                        "            </div>\n" +
-                        "            <div id=\"collapse"+i+"\" class=\"collapse\" aria-labelledby=\"heading"+i+"\" data-parent=\"#accordion\">\n" +
-                        "                <div class=\"card-body\">";
-
-                    message = message + "<div class=\"media comment-wrap\">\n" +
-                        // "  <img src=\"...\" class=\"mr-3\" alt=\"...\">\n" +
-                        "  <div class=\"media-body\">\n";
-                    // "    <h5 class=\"mt-0\">" + item.commentDetails.sender + "</h5>\n" +
-                    // item.commentDetails.content;
-                    if (item.subCommentDetails.length > 0) {
-                        $.each(item.subCommentDetails, function (i2, item2) {
-                            message = message + "\n" +
-                                "    <div class=\"media mt-3\">\n" +
-                                "      <a class=\"mr-3\" href=\"#\">\n" +
-                                // "        <img src=\"...\" class=\"mr-3\" alt=\"...\">\n" +
-                                "      </a>\n" +
-                                "      <div class=\"media-body\">\n" +
-                                "        <h5 class=\"mt-0\">" + item2.sender + "回复" + item2.receiver + "</h5>\n" +
-                                item2.content +
-                                "      </div>\n" +
-                                "</div>";
-                        });
+                    var message = "    <div class=\"card\">\n" +
+                        "        <div class=\"card-body\">\n" +
+                        "            <h5 class=\"card-title\">" + item.bname + "</h5>\n" +
+                        "            <h6 class=\"card-subtitle mb-2 text-muted\">" + item.sender + "</h6>\n" +
+                        "            <p class=\"card-text\">" + item.content + "</p>\n";
+                    if (item.isRead == 1) {
+                        message = message +
+                                "<button type=\"button\" class=\"btn btn-link disabled\">已回复</button>";
+                            // "            <a href=\"#\" value=\" " + item.id + " \" class=\"card-link\">已回复</a>\n";
+                    } else {
+                        message = message +
+                            "            <button id='btn-reply' type=\"button\" class=\"btn btn-link\" value=\" " + item.id + " \">回复</button>\n";
                     }
-                    message = message + "</div></div></div></div></div>"
+                    message = message +
+                        "        </div>\n" +
+                        "    </div>"
+                    $("#card-body").append(message);
                 });
-                $("#card-body").html(message);
-
                 currentPageNum = data.data.current;
                 pages = data.data.pages;
                 if (pages > 1) {
@@ -264,20 +240,20 @@
         $(document).off("click", ".page-num");
         $(document).on("click", ".page-num", function (e) {
             var pageNum = $(e.target).html();
-            getMessage(pageNum);
+            getMessage(pageNum, type);
         });
 
         $(document).off("click", ".btn-pre");
         $(document).on("click", ".btn-pre", function (e) {
             if (currentPageNum != 1) {
-                getMessage(currentPageNum - 1);
+                getMessage(currentPageNum - 1, type);
             }
         });
 
         $(document).off("click", ".btn-next");
         $(document).on("click", ".btn-next", function (e) {
             if (currentPageNum != pages) {
-                getMessage(currentPageNum + 1);
+                getMessage(currentPageNum + 1, type);
             }
         });
     });

@@ -2,6 +2,7 @@ package com.nit.book.shop.service.impl;
 
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -43,6 +44,9 @@ public class BookServiceImpl extends ServiceImpl<BookMapper, Book> implements Bo
 
     @Autowired
     private UserMapper userMapper;
+
+    @Autowired
+    private HistoryMapper historyMapper;
 
     @Autowired
     private MessageMapper messageMapper;
@@ -272,7 +276,7 @@ public class BookServiceImpl extends ServiceImpl<BookMapper, Book> implements Bo
     }
 
     @Override
-    public JsonResult<Boolean> contact(Integer bookId, String content) {
+    public JsonResult<Boolean> contact(Integer bookId) {
         Book book = bookMapper.selectById(bookId);
         if (book == null) {
             return JsonResult.error("书籍不存在");
@@ -286,7 +290,7 @@ public class BookServiceImpl extends ServiceImpl<BookMapper, Book> implements Bo
             .setReceiver(receiver.getName())
             .setSendUid(currentUser.getId())
             .setSender(currentUser.getName())
-            .setContent(content)
+            .setContent(currentUser.getName() + "请求获取联系方式")
             .setDate(LocalDateTime.now())
             .setType(2)
             .setParentId(0)
@@ -316,7 +320,7 @@ public class BookServiceImpl extends ServiceImpl<BookMapper, Book> implements Bo
     }
 
     @Override
-    public JsonResult<Boolean> contactPurchaser(Integer purchaseId, String content) {
+    public JsonResult<Boolean> contactPurchaser(Integer purchaseId) {
         Purchase purchase = purchaseMapper.selectById(purchaseId);
         if (purchase == null) {
             return JsonResult.error("求购信息不存在");
@@ -330,7 +334,7 @@ public class BookServiceImpl extends ServiceImpl<BookMapper, Book> implements Bo
             .setReceiver(receiver.getName())
             .setSendUid(currentUser.getId())
             .setSender(currentUser.getName())
-            .setContent(content)
+            .setContent(currentUser.getName()+"请求获取联系方式")
             .setDate(LocalDateTime.now())
             .setType(3)
             .setParentId(0)
@@ -340,6 +344,29 @@ public class BookServiceImpl extends ServiceImpl<BookMapper, Book> implements Bo
             return JsonResult.error("发送失败，请稍后再试");
         }
         return JsonResult.success(true);
+    }
+
+    @Override
+    public JsonResult<IPage<HistoryVO>> bookHistory(Integer pageNum, String search) {
+        Page<HistoryVO> pageObj = new Page<>(pageNum, 20);
+        User currentUser = authenticationService.findCurrentUser();
+        IPage<HistoryVO> historyVOIPage = bookMapper.findHistoryPage(pageObj, search,currentUser.getId() );
+        return JsonResult.success(historyVOIPage);
+    }
+
+    @Override
+    public JsonResult<Integer> deleteHistory(Integer hid) {
+        Integer res = historyMapper.deleteById(hid);
+        return JsonResult.success(res);
+    }
+
+    @Override
+    public JsonResult<Integer> cleanHistory() {
+        User currentUser = authenticationService.findCurrentUser();
+        UpdateWrapper<History> historyUpdateWrapper = new UpdateWrapper<>();
+        historyUpdateWrapper.eq("uid", currentUser.getId());
+        Integer res = historyMapper.delete(historyUpdateWrapper);
+        return JsonResult.success(res);
     }
 
 }

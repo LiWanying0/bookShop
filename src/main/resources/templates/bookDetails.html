@@ -147,22 +147,18 @@
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="modal">发送私信</h5>
+                <h5 class="modal-title" id="modal">联系卖家</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
             <div class="modal-body">
-                <form id="form-message">
-                    <div class="form-group">
-                        <label for="description" class="col-form-label">内容:</label>
-                        <textarea class="form-control" name="content" id="message-content"></textarea>
-                    </div>
-                </form>
+                <p>是否请求获取卖家联系方式？</p>
+                <p>卖家同意后可在<b>个人中心->我的消息</b> 中查看，请注意查收</p>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
-                <button type="button" class="btn btn-primary" id="submit-message">发送</button>
+                <button type="button" class="btn btn-primary" id="submit-message">确定</button>
             </div>
         </div>
     </div>
@@ -228,27 +224,27 @@
             "            <div style='text-align: left' class=\"row justify-content-center\">\n" +
             "                <div class=\"col-8\">" +
             "<button type=\"button\" id='btn-comment' class=\"btn btn-light\">发表评论</button>";
-                    imageContent = imageContent + "    <div id=\"accordion\">";
+        imageContent = imageContent + "    <div id=\"accordion\">";
         $.get("/book/comments/" + bookId, {},
             function (data) {
                 $.each(data.data, function (i, item) {
                     imageContent = imageContent + "        <div class=\"card\">\n" +
-                        "            <div class=\"card-header\" id=\"heading"+i+"\">\n" +
+                        "            <div class=\"card-header\" id=\"heading" + i + "\">\n" +
                         "                <h5 class=\"mb-0\">\n" +
-                        "                    <button class=\"btn btn-link collapsed\" data-toggle=\"collapse\" data-target=\"#collapse"+i+"\"\n" +
-                        "                            aria-expanded=\"false\" aria-controls=\"collapse"+i+"\">\n" +
-                       item.commentDetails.sender + ":" + item.commentDetails.content +
+                        "                    <button class=\"btn btn-link collapsed\" data-toggle=\"collapse\" data-target=\"#collapse" + i + "\"\n" +
+                        "                            aria-expanded=\"false\" aria-controls=\"collapse" + i + "\">\n" +
+                        item.commentDetails.sender + ":" + item.commentDetails.content +
                         "                    </button>\n" +
                         "                </h5>\n" +
                         "            </div>\n" +
-                        "            <div id=\"collapse"+i+"\" class=\"collapse\" aria-labelledby=\"heading"+i+"\" data-parent=\"#accordion\">\n" +
+                        "            <div id=\"collapse" + i + "\" class=\"collapse\" aria-labelledby=\"heading" + i + "\" data-parent=\"#accordion\">\n" +
                         "                <div class=\"card-body\">";
 
                     imageContent = imageContent + "<div class=\"media comment-wrap\">\n" +
                         // "  <img src=\"...\" class=\"mr-3\" alt=\"...\">\n" +
                         "  <div class=\"media-body\">\n";
-                        // "    <h5 class=\"mt-0\">" + item.commentDetails.sender + "</h5>\n" +
-                        // item.commentDetails.content;
+                    // "    <h5 class=\"mt-0\">" + item.commentDetails.sender + "</h5>\n" +
+                    // item.commentDetails.content;
                     if (item.subCommentDetails.length > 0) {
                         $.each(item.subCommentDetails, function (i2, item2) {
                             imageContent = imageContent + "\n" +
@@ -257,7 +253,7 @@
                                 // "        <img src=\"...\" class=\"mr-3\" alt=\"...\">\n" +
                                 "      </a>\n" +
                                 "      <div class=\"media-body\">\n" +
-                                "        <h5 class=\"mt-0\">" + item2.receiver + "回复" + item2.sender + "</h5>\n" +
+                                "        <h5 class=\"mt-0\">" + item2.sender + "回复" + item2.receiver + "</h5>\n" +
                                 item2.content +
                                 "      </div>\n" +
                                 "</div>";
@@ -331,33 +327,20 @@
         });
 
         $("#submit-message").click(function () {
-            var formObj = document.getElementById("form-message");
-            var formData = new FormData(formObj);
-            formData.set("bookId", bookId);
             $('#modal-message').modal("hide");
-            $.ajax({
-                type: "post",
-                url: "/book/contact",
-                data: formData,
-                dataType: "json",
-                cache: false,
-                processData: false,
-                contentType: false,
-                success: function (data) {
-                    console.log(data)
-                    if (data.code == '1') {
-                        formObj.reset();
-                        $('.toast').removeClass('bg-danger');
-                        $('.toast').addClass('bg-success');
-                        $('.toast').toast('show');
-                        $("#boast-content").html("发送成功");
-                        getBookComment(bookId);
-                    } else {
-                        $('.toast').removeClass('bg-success');
-                        $('.toast').addClass('bg-danger');
-                        $('.toast').toast('show');
-                        $("#boast-content").html(data.msg);
-                    }
+            $.post("/book/contact", {"bookId": bookId}, function (data) {
+                console.log(data)
+                if (data.code == '1') {
+                    $('.toast').removeClass('bg-danger');
+                    $('.toast').addClass('bg-success');
+                    $('.toast').toast('show');
+                    $("#boast-content").html("发送成功");
+                    getBookComment(bookId);
+                } else {
+                    $('.toast').removeClass('bg-success');
+                    $('.toast').addClass('bg-danger');
+                    $('.toast').toast('show');
+                    $("#boast-content").html(data.msg);
                 }
             });
         });

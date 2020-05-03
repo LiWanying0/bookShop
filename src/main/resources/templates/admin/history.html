@@ -1,10 +1,214 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
 </head>
+<style>
+    th, td {
+        white-space: nowrap;
+    }
+
+    #toast {
+        position: fixed;
+        right: 20px;
+        top: 60px;
+    }
+</style>
 <body>
-history
+<div class="container">
+    <div class="row">
+        <div class="col-3 mr-auto">
+            <div class="input-group mb-3">
+                <input type="text" class="form-control" placeholder="book or author" aria-label="search"
+                       id="search-text" aria-describedby="search-btn">
+                <div class="input-group-append">
+                    <button class="btn btn-outline-secondary" type="button" id="search-btn">搜索</button>
+                </div>
+
+
+            </div>
+        </div>
+        <div class="col-3">
+            <div class="input-group-append">
+                <button class="btn btn-danger" type="button" id="btn-clean">清空历史</button>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="table-responsive">
+        <table class="table">
+            <thead>
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">书名</th>
+                <th scope="col">售价</th>
+                <th scope="col">发布日期</th>
+                <th scope="col">操作</th>
+            </tr>
+            </thead>
+            <tbody id="tbody">
+            </tbody>
+        </table>
+    </div>
+    <div id="toast" class="toast bg-success" role="alert" aria-live="assertive" aria-atomic="true" data-delay="2000">
+        <div class="toast-header alter">
+            <strong class="mr-auto" id="boast-content">success</strong>
+        </div>
+    </div>
+    <nav aria-label="Page navigation example">
+        <ul class="pagination justify-content-center" id="pagination">
+
+        </ul>
+    </nav>
+</div>
 </body>
+<script>
+
+    var currentPageNum = 1;
+    var pages = 1;
+
+    function getBookList(pageNum, search) {
+        $.get("/admin/bookHistory",
+            {
+                "pageNum": pageNum,
+                "search": search
+            }
+            , function (data) {
+                $("#pagination").html(" ");
+                $("#tbody").html(" ");
+
+                $.each(data.data.records, function (i, item) {
+                    $("#tbody").append(
+                        "<tr>\n" +
+                        "            <th scope=\"row\">" + i + "</th>\n" +
+                        "<td>" +
+                        "<a href=\"/book/" + item.bid + "\" target=\"_blank\" value=\"" + item.id + "\">" + item.bname + "</a>" +
+                        "</td>\n" +
+                        "            <td> " + item.price + " </td>\n" +
+                        "            <td>" + item.date + "</td>\n" +
+                        "            <td>\n" +
+                        "                <a href=\"#\" value=\"" + item.id + "\" class=\"badge badge-danger delete-btn \">删除</a>\n" +
+                        // "                <a href=\"#\" class=\"badge badge-primary preview-btn \">查看</a>\n" +
+                        "            </td>\n" +
+                        "        </tr>"
+                    );
+                });
+                currentPageNum = data.data.current;
+                pages = data.data.pages;
+                if (pages > 1) {
+                    if (currentPageNum == 1) {
+                        $("#pagination").append(
+                            "           <li class=\"page-item disabled btn-pre\">\n" +
+                            "                <a class=\"page-link\" href=\"#\" aria-label=\"Previous\">\n" +
+                            "                    <span aria-hidden=\"true\">&laquo;</span>\n" +
+                            "                </a>\n" +
+                            "            </li>"
+                        );
+                    } else {
+                        $("#pagination").append(
+                            "           <li class=\"page-item btn-pre\">\n" +
+                            "                <a class=\"page-link\" href=\"#\" aria-label=\"Previous\">\n" +
+                            "                    <span aria-hidden=\"true\">&laquo;</span>\n" +
+                            "                </a>\n" +
+                            "            </li>"
+                        );
+                    }
+
+
+                    for (i = 1; i <= data.data.pages; i++) {
+                        if (i == currentPageNum) {
+                            $("#pagination").append(
+                                "<li class=\"page-item active page-num\"><a class=\"page-link\" href=\"#\">" + i + "</a></li>\n"
+                            );
+                        } else {
+                            $("#pagination").append(
+                                "<li class=\"page-item page-num \"><a class=\"page-link\" href=\"#\">" + i + "</a></li>\n"
+                            );
+                        }
+                    }
+
+                    if (currentPageNum == data.data.pages) {
+                        $("#pagination").append(
+                            "           <li class=\"page-item disabled btn-next\">\n" +
+                            "               <a class=\"page-link\" href=\"#\" aria-label=\"Next\">\n" +
+                            "                   <span aria-hidden=\"true\">&raquo;</span>\n" +
+                            "               </a>\n" +
+                            "            </li>"
+                        );
+                    } else {
+                        $("#pagination").append(
+                            "           <li class=\"page-item btn-next\">\n" +
+                            "               <a class=\"page-link\" href=\"#\" aria-label=\"Next\">\n" +
+                            "                   <span aria-hidden=\"true\">&raquo;</span>\n" +
+                            "               </a>\n" +
+                            "            </li>"
+                        );
+                    }
+
+                }
+            }, "json");
+    }
+
+    $(function () {
+        getBookList(1);
+        $(document).off("click", ".page-num");
+        $(document).on("click", ".page-num", function (e) {
+            var pageNum = $(e.target).html();
+            $("#pagination").html(" ");
+            $("#tbody").html(" ");
+            getBookList(pageNum);
+        });
+
+        $(document).off("click", ".btn-pre");
+        $(document).on("click", ".btn-pre", function (e) {
+            if (currentPageNum != 1) {
+                getBookList(currentPageNum - 1);
+            }
+        });
+
+        $(document).off("click", ".btn-next");
+        $(document).on("click", ".btn-next", function (e) {
+            if (currentPageNum != pages) {
+                getBookList(currentPageNum + 1);
+            }
+        });
+
+
+        $(document).off("click", ".delete-btn");
+        $(document).on("click", ".delete-btn", function (e) {
+            if (confirm("确定要删除吗？")) {
+                var hid = $(this).attr("value");
+                $.post("/admin/deleteHistory",
+                    {
+                        "hid": hid
+                    }
+                    , function (data) {
+                        $('.toast').toast('show');
+                        $("#boast-content").html("删除成功");
+                    });
+                getBookList(currentPageNum);
+            }
+        });
+
+        $("#btn-clean").click(function () {
+            if (confirm("确定要清空历史记录吗？")) {
+                $.post("/admin/cleanHistory",
+                    {}
+                    , function (data) {
+                        $('.toast').toast('show');
+                        $("#boast-content").html("清除成功");
+                    });
+                getBookList(currentPageNum);
+            }
+        });
+
+        $("#search-btn").click(function () {
+            var search = $("#search-text").val();
+            getBookList(1, search);
+        });
+    });
+</script>
 </html>

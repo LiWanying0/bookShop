@@ -84,9 +84,15 @@ public interface BookService extends IService<Book> {
 
     IPage<BookImageVO> findBookImageVOList(Integer page, Integer categoryId, String search);
 
-    JsonResult<Boolean> contact(Integer bookId, String content);
+    JsonResult<Boolean> contact(Integer bookId);
 
     JsonResult<Integer> purchase(String title, String content);
 
-    JsonResult<Boolean> contactPurchaser(Integer purchaseId, String content);
+    JsonResult<Boolean> contactPurchaser(Integer purchaseId);
+
+    JsonResult<IPage<HistoryVO>> bookHistory(Integer pageNum, String search);
+
+    JsonResult<Integer> deleteHistory(Integer hid);
+
+    JsonResult<Integer> cleanHistory();
 }

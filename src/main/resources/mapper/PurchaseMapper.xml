@@ -9,4 +9,11 @@
             where title like concat('%', #{search}, '%')
         </if>
     </select>
+
+    <select id="findPurchasePageByUserId" resultType="com.nit.book.shop.entity.Purchase">
+        select * from purchase where uid = #{uid}
+        <if test="search != null and search != ''">
+            and title like concat('%', #{search}, '%')
+        </if>
+    </select>
 </mapper>

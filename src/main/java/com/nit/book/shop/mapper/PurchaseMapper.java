@@ -18,4 +18,6 @@ import org.apache.ibatis.annotations.Param;
 public interface PurchaseMapper extends BaseMapper<Purchase> {
 
     IPage<Purchase> findPurchasePage(@Param("page") Page<Purchase> page, @Param("search") String search);
+
+    IPage<Purchase> findPurchasePageByUserId(@Param("page") Page<Purchase> page, @Param("search") String search, @Param("uid") Integer uid);
 }

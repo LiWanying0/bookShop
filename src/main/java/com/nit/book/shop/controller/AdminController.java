@@ -2,10 +2,10 @@ package com.nit.book.shop.controller;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.nit.book.shop.common.JsonResult;
-import com.nit.book.shop.entity.Book;
-import com.nit.book.shop.entity.BookDTO;
-import com.nit.book.shop.entity.Category;
+import com.nit.book.shop.entity.*;
+import com.nit.book.shop.mapper.CategoryMapper;
 import com.nit.book.shop.service.BookService;
+import com.nit.book.shop.service.PurchaseService;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -24,6 +24,12 @@ public class AdminController {
     @Autowired
     private BookService bookService;
 
+    @Autowired
+    private CategoryMapper categoryMapper;
+
+    @Autowired
+    private PurchaseService purchaseService;
+
     @GetMapping("")
     public String admin() {
         return "admin/admin";
@@ -34,19 +40,10 @@ public class AdminController {
         return "admin/personZone";
     }
 
-   @GetMapping("publish")
+    @GetMapping("publish")
     public String publish(Model model) {
 
-       List<Category> categories = new ArrayList<>();
-       Category category = new Category();
-       category.setId(1);
-       category.setName("社会社会");
-       categories.add(category);
-
-       Category category2 = new Category();
-       category2.setId(1333);
-       category2.setName("哈哈");
-       categories.add(category2);
+        List<Category> categories = categoryMapper.selectList(null);
         model.addAttribute("categories", categories);
         return "admin/publish";
     }
@@ -67,8 +64,13 @@ public class AdminController {
         return "admin/history";
     }
 
-    @GetMapping("purchase")
+    @GetMapping("publishPurchase")
     public String need() {
+        return "admin/publishPurchase";
+    }
+
+    @GetMapping("purchase")
+    public String purchase() {
         return "admin/purchase";
     }
 
@@ -88,6 +90,53 @@ public class AdminController {
         return bookService.findBookList(pageNum, search);
     }
 
+    @GetMapping("purchaseList")
+    @ResponseBody
+    public JsonResult<IPage<Purchase>> purchaseList(
+        @RequestParam(value = "pageNum", defaultValue = "0")
+            Integer pageNum,
+        @RequestParam(value = "search", required = false)
+            String search) {
+        return purchaseService.purchaseList(pageNum, search);
+    }
+
+    @GetMapping("bookHistory")
+    @ResponseBody
+    public JsonResult<IPage<HistoryVO>> bookHistory(
+        @RequestParam(value = "pageNum", defaultValue = "0")
+            Integer pageNum,
+        @RequestParam(value = "search", required = false)
+            String search) {
+        return bookService.bookHistory(pageNum, search);
+    }
+
+    @GetMapping("findPurchaseById")
+    @ResponseBody
+    public JsonResult<Purchase> findPurchaseById(@RequestParam("purchaseId") Integer purchaseId) {
+        return purchaseService.findPurchaseById(purchaseId);
+    }
+
+    @PostMapping("updatePurchase")
+    @ResponseBody
+    public JsonResult<Integer> updatePurchase(String purchaseId, String title, String content) {
+        return purchaseService.updatePurchase(purchaseId, title, content);
+    }
+
+    @PostMapping("deleteHistory")
+    @ResponseBody
+    public JsonResult<Integer> deleteHistory(
+        @RequestParam(value = "hid")
+            Integer hid
+    ) {
+        return bookService.deleteHistory(hid);
+    }
+
+    @PostMapping("cleanHistory")
+    @ResponseBody
+    public JsonResult<Integer> cleanHistory() {
+        return bookService.cleanHistory();
+    }
+
     @PostMapping("deleteBook")
     @ResponseBody
     public JsonResult<Integer> deleteBook(
@@ -95,6 +144,15 @@ public class AdminController {
             Integer bookId
     ) {
         return bookService.deleteBook(bookId);
+    }
+
+    @PostMapping("deletePurchase")
+    @ResponseBody
+    public JsonResult<Integer> deletePurchase(
+        @RequestParam(value = "purchaseId")
+            Integer purchaseId
+    ) {
+        return purchaseService.deletePurchase(purchaseId);
     }
 
     @SneakyThrows

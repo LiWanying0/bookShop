@@ -1,18 +1,18 @@
 package com.nit.book.shop.controller;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.nit.book.shop.common.JsonResult;
-import com.nit.book.shop.entity.Book;
-import com.nit.book.shop.entity.BookMessageAndCommentVO;
-import com.nit.book.shop.entity.BookImage;
-import com.nit.book.shop.service.BookImageService;
-import com.nit.book.shop.service.BookService;
-import com.nit.book.shop.service.CategoryService;
-import com.nit.book.shop.service.UserService;
+import com.nit.book.shop.entity.*;
+import com.nit.book.shop.mapper.HistoryMapper;
+import com.nit.book.shop.mapper.PurchaseMapper;
+import com.nit.book.shop.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.w3c.dom.html.HTMLIsIndexElement;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Controller
@@ -25,8 +25,16 @@ public class BookController {
     private BookService bookService;
     @Autowired
     private BookImageService bookImageService;
+
     @Autowired
     private CategoryService categoryService;
+
+    @Autowired
+    private AuthenticationService authenticationService;
+
+    @Autowired
+    private HistoryMapper historyMapper;
+
 
     @GetMapping("findBookById")
     @ResponseBody
@@ -43,6 +51,21 @@ public class BookController {
     @GetMapping("/{bookId}")
     public String bookDetails(@PathVariable("bookId") Integer bookId, Model model) {
         JsonResult<Book> result = bookService.findBookById(bookId);
+        if (authenticationService.isLogin()){
+            User currentUser = authenticationService.findCurrentUser();
+            QueryWrapper<History> queryWrapper = new QueryWrapper<>();
+            queryWrapper.eq("uid", currentUser.getId()).eq("bid", bookId);
+            History history = historyMapper.selectOne(queryWrapper);
+            if (history != null){
+                history.setDate(LocalDateTime.now());
+                historyMapper.updateById(history);
+            }else{
+                history = new History();
+                history.setBid(bookId).setUid(currentUser.getId()).setDate(LocalDateTime.now());
+                historyMapper.insert(history);
+            }
+        }
+
         model.addAttribute("book", result.getData());
         return "bookDetails";
     }
@@ -72,16 +95,14 @@ public class BookController {
     @PostMapping("/contact")
     @ResponseBody
     public JsonResult<Boolean> contact (
-        @RequestParam("bookId") Integer bookId,
-        @RequestParam("content")String content) {
-        return bookService.contact(bookId, content);
+        @RequestParam("bookId") Integer bookId) {
+        return bookService.contact(bookId);
     }
 
     @PostMapping("/contactPurchaser")
     @ResponseBody
     public JsonResult<Boolean> contactPurchaser (
-        @RequestParam("purchaseId") Integer purchaseId,
-        @RequestParam("content")String content) {
-        return bookService.contactPurchaser(purchaseId, content);
+        @RequestParam("purchaseId") Integer purchaseId) {
+        return bookService.contactPurchaser(purchaseId);
     }
 }

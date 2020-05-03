@@ -25,7 +25,7 @@
         padding-bottom: 0px;
     }
 
-    #search{
+    #search {
         border-radius: 0.8em;
     }
 
@@ -97,12 +97,12 @@
             <button class="btn btn-light my-2 my-sm-0" type="submit" style="padding-right: 0px;border: none;">
                 <span class="oi oi-magnifying-glass" title="搜索" aria-hidden="true"></span>
             </button>
-<!--            <div class="input-group mb-3">-->
-<!--                <input type="text" class="form-control" placeholder="Recipient's username" aria-label="Recipient's username" aria-describedby="basic-addon2">-->
-<!--                <div class="input-group-append">-->
-<!--                    <button class="btn btn-outline-secondary" type="button">Button</button>-->
-<!--                </div>-->
-<!--            </div>-->
+            <!--            <div class="input-group mb-3">-->
+            <!--                <input type="text" class="form-control" placeholder="Recipient's username" aria-label="Recipient's username" aria-describedby="basic-addon2">-->
+            <!--                <div class="input-group-append">-->
+            <!--                    <button class="btn btn-outline-secondary" type="button">Button</button>-->
+            <!--                </div>-->
+            <!--            </div>-->
         </form>
 
 
@@ -153,7 +153,7 @@
 
             <tr th:each="index : ${#numbers.sequence(1, pages)}">
                 <td>
-                    <li class="page-item active" th:if="${current} == ${index}" >
+                    <li class="page-item active" th:if="${current} == ${index}">
                         <a class="page-link" th:href="@{/purchases(page=${index}) }"
                            th:text="${index}">1</a></li>
 
@@ -164,7 +164,7 @@
             </tr>
 
             <li class="page-item" th:if="${current} != ${pages}">
-                <a class="page-link"  th:href="@{/purchases(page=${current} + 1)}" aria-label="Next">
+                <a class="page-link" th:href="@{/purchases(page=${current} + 1)}" aria-label="Next">
                     <span aria-hidden="true">&raquo;</span>
                 </a>
             </li>
@@ -190,23 +190,18 @@
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">发送私信</h5>
+                <h5 class="modal-title" id="exampleModalLabel">联系买家</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
             <div class="modal-body">
-                <form id="form">
-                    <input type="text" class="form-control" name="purchaseId" id="purchaseId" hidden="hidden">
-                    <div class="form-group">
-                        <label for="content" class="col-form-label">内容:</label>
-                        <textarea class="form-control" name="content" id="content"></textarea>
-                    </div>
-                </form>
+                <p>是否请求获取买家联系方式？</p>
+                <p>卖家同意后可在<b>个人中心->我的消息</b> 中查看，请注意查收</p>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
-                <button type="button" class="btn btn-primary" id="submit-send">发送</button>
+                <button type="button" class="btn btn-primary" id="submit-send">确定</button>
             </div>
         </div>
     </div>
@@ -240,22 +235,10 @@
         });
 
         $("#submit-send").click(function () {
-            var formObj = document.getElementById("form");
-            var formData = new FormData(formObj);
-            formData.set("purchaseId", purchaseId);
-            $('#modal-message').modal("hide");
-            $.ajax({
-                type: "post",
-                url: "/book/contactPurchaser",
-                data: formData,
-                dataType: "json",
-                cache: false,
-                processData: false,
-                contentType: false,
-                success: function (data) {
+            $.post("/book/contactPurchaser", {"purchaseId": purchaseId},
+                function (data) {
                     console.log(data)
                     if (data.code == '1') {
-                        formObj.reset();
                         $('.toast').removeClass('bg-danger');
                         $('.toast').addClass('bg-success');
                         $('.toast').toast('show');
@@ -266,8 +249,33 @@
                         $('.toast').toast('show');
                         $("#boast-content").html(data.msg);
                     }
-                }
-            });
+                });
+
+            $('#modal-message').modal("hide");
+            // $.ajax({
+            //     type: "post",
+            //     url: "/book/contactPurchaser",
+            //     data: formData,
+            //     dataType: "json",
+            //     cache: false,
+            //     processData: false,
+            //     contentType: false,
+            //     success: function (data) {
+            //         console.log(data)
+            //         if (data.code == '1') {
+            //             formObj.reset();
+            //             $('.toast').removeClass('bg-danger');
+            //             $('.toast').addClass('bg-success');
+            //             $('.toast').toast('show');
+            //             $("#boast-content").html("发送成功");
+            //         } else {
+            //             $('.toast').removeClass('bg-success');
+            //             $('.toast').addClass('bg-danger');
+            //             $('.toast').toast('show');
+            //             $("#boast-content").html(data.msg);
+            //         }
+            //     }
+            // });
         });
     });
 </script>
