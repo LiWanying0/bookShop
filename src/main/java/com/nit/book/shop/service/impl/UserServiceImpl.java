@@ -1,13 +1,24 @@
 package com.nit.book.shop.service.impl;
 
-import com.nit.book.shop.dao.UserDAO;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.nit.book.shop.entity.User;
+import com.nit.book.shop.mapper.UserMapper;
 import com.nit.book.shop.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 public class UserServiceImpl implements UserService{
+    @Autowired
+    private UserMapper userMapper;
+
+    @Override
+    public User findByStudentId(String username) {
+        QueryWrapper<com.nit.book.shop.entity.User> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("studentid", username);
+        return userMapper.selectOne(queryWrapper);
+
+    }
 
 //    @Autowired
 //    private UserDAO userDAO;

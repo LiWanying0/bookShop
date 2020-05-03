@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
@@ -97,7 +98,9 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                    <form>
+                    <form id="form">
+                        <input type="text" class="form-control" name="id" id="bookId" hidden="hidden">
+
                         <div class="form-group">
                             <label for="name" class="col-form-label">书名:</label>
                             <input type="text" class="form-control" name="name" id="name">
@@ -249,15 +252,18 @@
             }
         });
 
+        var bookId = null;
+
         $(document).off("click", ".update-btn");
         $(document).on("click", ".update-btn", function (e) {
-            var bookId = $(e.target).attr("value");
+            bookId = $(e.target).attr("value");
             $.get("/book/findBookById",
                 {
                     "bookId" : bookId
                 },
                 function(data){
                     var book = data.data;
+                    $("#bookId").val(bookId);
                     $("#name").val(book.name);
                     $("#author").val(book.author);
                     $("#description").val(book.description);
@@ -286,7 +292,32 @@
         });
 
         $("#submit-update").click(function () {
-            alert(2);
+            var formObj = document.getElementById("form");
+            var formData = new FormData(formObj);
+            $.ajax({
+                type: "post",
+                url: "/book/updateBook",
+                data: formData,
+                dataType: "json",
+                cache: false,
+                processData: false,
+                contentType: false,
+                success: function (data) {
+                    console.log(data)
+                    if (data.code == '1'){
+                        formObj.reset();
+                        $('.toast').removeClass('bg-danger');
+                        $('.toast').addClass('bg-success');
+                        $('.toast').toast('show');
+                        $("#boast-content").html("修改成功");
+                    }else{
+                        $('.toast').removeClass('bg-success');
+                        $('.toast').addClass('bg-danger');
+                        $('.toast').toast('show');
+                        $("#boast-content").html(data.msg);
+                    }
+                }
+            });
         });
         $("#search-btn").click(function () {
             var search = $("#search-text").val();

@@ -61,9 +61,9 @@ $(function(){
         );
     });
 
-    $("#btn-need").click(function(){
+    $("#btn-purchase").click(function(){
         $("#admin-content").html(" ");
-        $.get("/admin/need", {},
+        $.get("/admin/purchase", {},
             function (data, textStatus, jqXHR) {
                 $("#admin-content").html(data);
             },

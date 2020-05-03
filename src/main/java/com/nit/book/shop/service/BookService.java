@@ -3,9 +3,7 @@ package com.nit.book.shop.service;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.nit.book.shop.common.JsonResult;
-import com.nit.book.shop.entity.Book;
-import com.nit.book.shop.entity.BookDTO;
-import com.nit.book.shop.entity.BookIndexVO;
+import com.nit.book.shop.entity.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
@@ -77,4 +75,18 @@ public interface BookService extends IService<Book> {
     JsonResult<Book> findBookById(Integer bookId);
 
     JsonResult<Integer> updateBook(Book book);
+
+    BookAndImagesVO findBookAndImages(Integer bookId);
+
+    JsonResult<Boolean> commentBook(Integer bookId, String comment);
+
+    JsonResult<List<BookMessageAndCommentVO>> findComment(Integer bookId);
+
+    IPage<BookImageVO> findBookImageVOList(Integer page, Integer categoryId, String search);
+
+    JsonResult<Boolean> contact(Integer bookId, String content);
+
+    JsonResult<Integer> purchase(String title, String content);
+
+    JsonResult<Boolean> contactPurchaser(Integer purchaseId, String content);
 }

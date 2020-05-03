@@ -33,5 +33,10 @@ public class Book implements Serializable {
 
     private LocalDateTime date;
 
+    private Integer likeTotal;
+
+    private Integer collectionTotal;
+
+    private Integer viewTotal;
 
 }

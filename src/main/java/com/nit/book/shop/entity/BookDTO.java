@@ -6,5 +6,5 @@ import lombok.EqualsAndHashCode;
 @Data
 @EqualsAndHashCode(callSuper = true)
 public class BookDTO extends Book {
-    private Integer imageId;
+    private BookImage bookImage;
 }

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nit.book.shop.mapper.PurchaseMapper">
+
+
+    <select id="findPurchasePage" resultType="com.nit.book.shop.entity.Purchase">
+        select * from purchase
+        <if test="search != null and search != ''">
+            where title like concat('%', #{search}, '%')
+        </if>
+    </select>
+</mapper>

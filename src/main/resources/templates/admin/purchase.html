@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>发布</title>
+</head>
+<style>
+    #toast {
+        position:fixed;
+        right:20px;
+        top:60px;
+    }
+</style>
+<body>
+<div class="container">
+    <div class="row justify-content-md-center">
+        <div class="col col-6">
+            <form id="form" onsubmit="return false;">
+                <div class="form-group row">
+                    <label for="title" class="col-sm-2 col-form-label">标题</label>
+                    <div class="col-sm-10">
+                        <input type="text" name="title" class="form-control" id="title" required oninvalid="setCustomValidity('请输入标题！');" oninput="setCustomValidity('');">
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <label for="content" class="col-sm-2 col-form-label">简介</label>
+                    <div class="col-sm-10">
+                        <textarea class="form-control" name="content" id="content" required oninvalid="setCustomValidity('请输入简介！');" oninput="setCustomValidity('');"></textarea>
+                        <!--                        <input type="text" name="description" class="form-control" id="description" required oninvalid="setCustomValidity('请输入简介！');" oninput="setCustomValidity('');">-->
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <div class="col-sm-10">
+                        <button class="btn btn-primary" id="publish-book">确认发布</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+
+</div>
+
+<div id="toast" class="toast bg-success" role="alert" aria-live="assertive" aria-atomic="true" data-delay="2000">
+    <div class="toast-header alter">
+        <strong class="mr-auto" id="boast-content">success</strong>
+    </div>
+</div>
+
+
+
+
+
+</body>
+<script>
+    $(function () {
+
+        $("#publish-book").click(function(){
+            var success = true;
+            var formObj = document.getElementById("form");
+            var formData = new FormData(formObj);
+            if (formData.get("title").length < 1){
+                success = false;
+            }
+            if (formData.get("content").length < 1){
+                success = false;
+            }
+
+            if (success){
+                $.ajax({
+                    type: "post",
+                    url: "/admin/book/purchase",
+                    data: formData,
+                    dataType: "json",
+                    cache: false,
+                    processData: false,
+                    contentType: false,
+                    success: function (data) {
+                        console.log(data)
+                        if (data.code == '1'){
+                            formObj.reset();
+                            $('.toast').removeClass('bg-danger');
+                            $('.toast').addClass('bg-success');
+                            $('.toast').toast('show');
+                            $("#boast-content").html("发布成功");
+                        }else{
+                            $('.toast').removeClass('bg-success');
+                            $('.toast').addClass('bg-danger');
+                            $('.toast').toast('show');
+                            $("#boast-content").html(data.msg);
+                        }
+                    }
+                });
+            }
+        });
+
+    });
+</script>
+</html>

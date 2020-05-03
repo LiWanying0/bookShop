@@ -37,8 +37,21 @@
     <select id="selectBookDTOPage" resultType="com.nit.book.shop.entity.BookDTO">
         select b.*, bi.id as imageId from book b
         inner join book_image bi on bi.bid = b.id
+        where b.uid = #{uid}
         <if test="search != null and search!= ''">
-            where name like concat('%', #{search}, '%')
+            and name like concat('%', #{search}, '%')
+        </if>
+    </select>
+
+    <select id="findBookImageVOList" resultType="com.nit.book.shop.entity.BookImageVO">
+        select b.*, bi.image_name as imageName from book b
+        inner join book_image bi on bi.bid = b.id
+        where b.id = b.id
+        <if test="categoryId != null and categoryId != 0">
+            and b.cid = #{categoryId}
+        </if>
+        <if test="search != null and search != ''">
+            and ( b.name like concat ('%', #{search} ,'%') or b.author like concat ('%',#{search},'%'))
         </if>
     </select>
 

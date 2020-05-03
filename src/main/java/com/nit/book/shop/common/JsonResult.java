@@ -12,9 +12,9 @@ import lombok.experimental.Accessors;
 @Data
 @Accessors(chain = true)
 public class JsonResult<T> {
-    private static final Integer SUCCESS_CODE = 1;
-    private static final String SUCCESS_MSG = "OK";
-    private static final Integer ERROR_CODE = 0;
+    public static final Integer SUCCESS_CODE = 1;
+    public static final String SUCCESS_MSG = "OK";
+    public static final Integer ERROR_CODE = 0;
     
     private Integer code;
     private String msg;

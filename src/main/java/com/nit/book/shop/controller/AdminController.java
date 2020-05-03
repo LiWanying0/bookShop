@@ -8,17 +8,12 @@ import com.nit.book.shop.entity.Category;
 import com.nit.book.shop.service.BookService;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.validation.constraints.NotNull;
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -72,9 +67,9 @@ public class AdminController {
         return "admin/history";
     }
 
-    @GetMapping("need")
+    @GetMapping("purchase")
     public String need() {
-        return "admin/need";
+        return "admin/purchase";
     }
 
     @GetMapping("message")
@@ -102,8 +97,6 @@ public class AdminController {
         return bookService.deleteBook(bookId);
     }
 
-
-
     @SneakyThrows
     @PostMapping("/book/upload")
     @ResponseBody
@@ -114,5 +107,14 @@ public class AdminController {
         @RequestParam("images") MultipartFile[] images
     ) {
         return bookService.uploadBook(book, images);
+    }
+
+    @PostMapping("/book/purchase")
+    @ResponseBody
+    public JsonResult<Integer> purchase(
+        @RequestParam("title") String title,
+        @RequestParam("content") String content
+    ) {
+        return bookService.purchase(title, content);
     }
 }

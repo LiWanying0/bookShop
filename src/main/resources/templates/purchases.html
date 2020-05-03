@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <!-- <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" > -->
+    <link th:href="@{/bootstrap-4.4.1-dist/css/bootstrap.css}" rel="stylesheet">
+    <link th:href="@{/bootstrap-4.4.1-dist/dashboard.css}" rel="stylesheet">
+    <link th:href="@{/bootstrap-4.4.1-dist/font/css/open-iconic-bootstrap.css}" rel="stylesheet">
+    <!--    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>-->
+    <title>Hello, world!</title>
+</head>
+<style>
+    .book-image {
+        width: 100%;
+        margin: 0.2em;
+    }
+
+    .navbar {
+        padding-top: 0px;
+        padding-bottom: 0px;
+    }
+
+    #search{
+        border-radius: 0.8em;
+    }
+
+    .oi {
+        margin-right: 10px;
+        color: grey;
+    }
+
+    #toast {
+        position: fixed;
+        right: 20px;
+        top: 60px;
+    }
+
+    .comment-wrap {
+        border-bottom: solid 1px rgba(0, 0, 0, 0.125);
+        padding-bottom: 10px;
+    }
+
+    .card {
+        border-left: none;
+        border-right: none;
+        border-top: none;
+    }
+
+    .card-body {
+        padding: 10px;
+    }
+
+    .dropdown-menu {
+        right: 0px;
+        /*text-align: center;*/
+        min-width: 2em;
+        overflow: hidden;
+        border: none;
+    }
+
+    .dropdown-item {
+        padding-left: 0px;
+        padding-right: 0px;
+    }
+</style>
+
+<body>
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <a class="navbar-brand" th:href="@{/}">BOOK</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item active">
+                <a class="nav-link" href="#">首页<span class="sr-only">(current)</span></a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" th:href="@{/books}" tabindex="-1" aria-disabled="true">发现</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" th:href="@{/purchases}">求购区</a>
+            </li>
+
+        </ul>
+
+
+        <form class="form-inline mr-auto">
+            <input class="form-control mr-sm-2" type="search" id="search" placeholder="搜索" aria-label="Search">
+            <button class="btn btn-light my-2 my-sm-0" type="submit" style="padding-right: 0px;border: none;">
+                <span class="oi oi-magnifying-glass" title="搜索" aria-hidden="true"></span>
+            </button>
+<!--            <div class="input-group mb-3">-->
+<!--                <input type="text" class="form-control" placeholder="Recipient's username" aria-label="Recipient's username" aria-describedby="basic-addon2">-->
+<!--                <div class="input-group-append">-->
+<!--                    <button class="btn btn-outline-secondary" type="button">Button</button>-->
+<!--                </div>-->
+<!--            </div>-->
+        </form>
+
+
+        <ul class="navbar-nav">
+            <li class="nav-item" sec:authorize="!isAuthenticated()">
+                <a class="nav-link" th:href="@{/login}">登录</a>
+            </li>
+
+            <li class="nav-item dropdown" sec:authorize="isAuthenticated()">
+                <a class="nav-link dropdown-toggle" sec:authentication="name" href="#" id="navbarDropdownMenuLink"
+                   data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    保罗麦卡特尼
+                </a>
+                <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                    <a class="dropdown-item" target="view_window" th:href="@{/admin}">个人中心</a>
+                    <a class="dropdown-item" th:href="@{/logout}">注销</a>
+                </div>
+            </li>
+        </ul>
+
+    </div>
+</nav>
+
+<div class="container">
+
+    <div class="card" th:each="purchase : ${purchases}">
+        <div class="card-body">
+            <h5 class="card-title" th:text="${purchase.title}">求购冰与火之歌</h5>
+            <h6 class="card-subtitle mb-2 text-muted" th:text="${purchase.uname}">巴佩罗</h6>
+            <p class="card-text" th:text="${purchase.content}">求购冰与火之歌第一卷列王的纷争,价格不高于50，实际金额看成色决定.</p>
+            <a href="#" id="btn-message" th:value="${purchase.id}" class="btn btn-primary">联系买家</a>
+        </div>
+    </div>
+
+    <nav aria-label="Page navigation">
+        <ul class="pagination justify-content-center">
+            <li class="page-item disabled" th:if="${current} == 1">
+                <a class="page-link" href="#" aria-label="Previous">
+                    <span aria-hidden="true">&laquo;</span>
+                </a>
+            </li>
+
+            <li class="page-item" th:if="${current} != 1">
+                <a class="page-link" th:href="@{/purchases(page=${current} - 1)}" aria-label="Previous">
+                    <span aria-hidden="true">&laquo;</span>
+                </a>
+            </li>
+
+            <tr th:each="index : ${#numbers.sequence(1, pages)}">
+                <td>
+                    <li class="page-item active" th:if="${current} == ${index}" >
+                        <a class="page-link" th:href="@{/purchases(page=${index}) }"
+                           th:text="${index}">1</a></li>
+
+                    <li class="page-item" th:if="${current} != ${index}">
+                        <a class="page-link" th:href="@{/purchases(page=${index})}"
+                           th:text="${index}">1</a></li>
+                </td>
+            </tr>
+
+            <li class="page-item" th:if="${current} != ${pages}">
+                <a class="page-link"  th:href="@{/purchases(page=${current} + 1)}" aria-label="Next">
+                    <span aria-hidden="true">&raquo;</span>
+                </a>
+            </li>
+
+            <li class="page-item disabled" th:if="${current} == ${pages}">
+                <a class="page-link " href="#" aria-label="Next">
+                    <span aria-hidden="true">&raquo;</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+
+
+    <footer>
+        <a href="#">©2018-2019 二手书交易</a>
+        <a href="#">意见反馈&nbsp;&nbsp;&nbsp;联系我们&nbsp;&nbsp;&nbsp;隐私权声明&nbsp;&nbsp;&nbsp;使用条款</a>
+    </footer>
+</div>
+
+
+<div class="modal fade" id="modal-message" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">发送私信</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="form">
+                    <input type="text" class="form-control" name="purchaseId" id="purchaseId" hidden="hidden">
+                    <div class="form-group">
+                        <label for="content" class="col-form-label">内容:</label>
+                        <textarea class="form-control" name="content" id="content"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
+                <button type="button" class="btn btn-primary" id="submit-send">发送</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div id="toast" class="toast bg-success" role="alert" aria-live="assertive" aria-atomic="true" data-delay="2000">
+    <div class="toast-header alter">
+
+        <strong class="mr-auto" id="boast-content">success</strong>
+
+    </div>
+
+</div>
+
+<script th:src="@{/js/jquery-3.3.1.js}"></script>
+<script th:src="@{/bootstrap-4.4.1-dist/js/bootstrap.bundle.js}"></script>
+<script th:src="@{/bootstrap-4.4.1-dist/js/bootstrap.js}"></script>
+</body>
+
+<script>
+
+    var purchaseId = 0;
+
+    $(function () {
+
+        $(document).off("click", "#btn-message");
+        $(document).on("click", "#btn-message", function (e) {
+            purchaseId = $(e.target).attr("value");
+            $('#modal-message').modal("show");
+        });
+
+        $("#submit-send").click(function () {
+            var formObj = document.getElementById("form");
+            var formData = new FormData(formObj);
+            formData.set("purchaseId", purchaseId);
+            $('#modal-message').modal("hide");
+            $.ajax({
+                type: "post",
+                url: "/book/contactPurchaser",
+                data: formData,
+                dataType: "json",
+                cache: false,
+                processData: false,
+                contentType: false,
+                success: function (data) {
+                    console.log(data)
+                    if (data.code == '1') {
+                        formObj.reset();
+                        $('.toast').removeClass('bg-danger');
+                        $('.toast').addClass('bg-success');
+                        $('.toast').toast('show');
+                        $("#boast-content").html("发送成功");
+                    } else {
+                        $('.toast').removeClass('bg-success');
+                        $('.toast').addClass('bg-danger');
+                        $('.toast').toast('show');
+                        $("#boast-content").html(data.msg);
+                    }
+                }
+            });
+        });
+    });
+</script>
+</html>

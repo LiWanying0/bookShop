@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <!-- <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" > -->
+    <link th:href="@{/bootstrap-4.4.1-dist/css/bootstrap.css}" rel="stylesheet">
+    <link th:href="@{/bootstrap-4.4.1-dist/dashboard.css}" rel="stylesheet">
+    <link th:href="@{/bootstrap-4.4.1-dist/font/css/open-iconic-bootstrap.css}" rel="stylesheet">
+    <!--    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>-->
+    <title>Hello, world!</title>
+</head>
+<style>
+    .book-image {
+        width: 100%;
+        margin: 0.2em;
+    }
+
+    .oi {
+        margin-right: 10px;
+        color: grey;
+    }
+
+    #toast {
+        position: fixed;
+        right: 20px;
+        top: 60px;
+    }
+
+    .comment-wrap {
+        border-bottom: solid 1px rgba(0, 0, 0, 0.125);
+        padding-bottom: 10px;
+    }
+</style>
+
+<body>
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <a class="navbar-brand" th:href="@{/}">BOOK</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item active">
+                <a class="nav-link" href="#">首页<span class="sr-only">(current)</span></a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" th:href="@{/books}" tabindex="-1" aria-disabled="true">发现</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" th:href="@{/purchases}">求购区</a>
+            </li>
+
+        </ul>
+
+
+        <form class="form-inline mr-auto">
+            <input class="form-control mr-sm-2" type="search" id="search" placeholder="搜索" aria-label="Search">
+            <button class="btn btn-light my-2 my-sm-0" type="submit" style="padding-right: 0px;border: none;">
+                <span class="oi oi-magnifying-glass" title="搜索" aria-hidden="true"></span>
+            </button>
+            <!--            <div class="input-group mb-3">-->
+            <!--                <input type="text" class="form-control" placeholder="Recipient's username" aria-label="Recipient's username" aria-describedby="basic-addon2">-->
+            <!--                <div class="input-group-append">-->
+            <!--                    <button class="btn btn-outline-secondary" type="button">Button</button>-->
+            <!--                </div>-->
+            <!--            </div>-->
+        </form>
+
+
+        <ul class="navbar-nav">
+            <li class="nav-item" sec:authorize="!isAuthenticated()">
+                <a class="nav-link" th:href="@{/login}">登录</a>
+            </li>
+
+            <li class="nav-item dropdown" sec:authorize="isAuthenticated()">
+                <a class="nav-link dropdown-toggle" sec:authentication="name" href="#" id="navbarDropdownMenuLink"
+                   data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    保罗麦卡特尼
+                </a>
+                <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                    <a class="dropdown-item" target="view_window" th:href="@{/admin}">个人中心</a>
+                    <a class="dropdown-item" th:href="@{/logout}">注销</a>
+                </div>
+            </li>
+        </ul>
+
+    </div>
+</nav>
+
+<div class="container">
+
+
+    <div class="card">
+        <!--        <h4 class="card-header">傲慢与偏见</h4>-->
+        <div class="card-body">
+            <input id="book-id" type="hidden" th:value="${book.id}"/>
+            <h4 class="card-title" th:text="${book.name}">傲慢与偏见</h4>
+            <p class="card-text">作者：<span th:text="${book.author}"></span></p>
+            <p class="card-text">出版社：<span th:text="${book.press}"></span></p>
+            <p class="card-text">发布日期：<span th:text="${book.date}"></span></p>
+            <p class="card-text">说明：<span th:text="${book.description}"></span></p>
+            <p>
+                <span class="oi oi-eye" title="浏览量" aria-hidden="true"> 999</span>
+                <span class="oi oi-heart" title="喜欢" aria-hidden="true"> 999</span>
+                <span class="oi oi-bookmark" title="收藏量" aria-hidden="true"> 999</span>
+            </p>
+
+            <p>
+                <a href="#" id="btn-message" class="btn btn-primary">联系卖家</a>
+            </p>
+        </div>
+    </div>
+
+    <div class="card text-center">
+        <div class="card-header">
+            <ul class="nav nav-tabs card-header-tabs">
+                <li class="nav-item">
+                    <a class="nav-link active" id="tab-image" href="#">详情图片</a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link" href="#" id="tab-comment">评论</a>
+                </li>
+            </ul>
+        </div>
+
+        <div class="card-body" id="card-body">
+
+        </div>
+    </div>
+    <footer>
+        <a href="#">©2018-2019 二手书交易</a>
+        <a href="#">意见反馈&nbsp;&nbsp;&nbsp;联系我们&nbsp;&nbsp;&nbsp;隐私权声明&nbsp;&nbsp;&nbsp;使用条款</a>
+    </footer>
+</div>
+
+
+<div class="modal fade" id="modal-message" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modal">发送私信</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="form-message">
+                    <div class="form-group">
+                        <label for="description" class="col-form-label">内容:</label>
+                        <textarea class="form-control" name="content" id="message-content"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
+                <button type="button" class="btn btn-primary" id="submit-message">发送</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modal-comment" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">发表评论</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="form">
+                    <input type="text" class="form-control" name="bookId" id="bookId" hidden="hidden">
+                    <div class="form-group">
+                        <label for="description" class="col-form-label">评论内容:</label>
+                        <textarea class="form-control" name="comment" id="description"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
+                <button type="button" class="btn btn-primary" id="submit-comment">发表</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div id="toast" class="toast bg-success" role="alert" aria-live="assertive" aria-atomic="true" data-delay="2000">
+    <div class="toast-header alter">
+        <strong class="mr-auto" id="boast-content">success</strong>
+    </div>
+</div>
+
+<script th:src="@{/js/jquery-3.3.1.js}"></script>
+<script th:src="@{/bootstrap-4.4.1-dist/js/bootstrap.bundle.js}"></script>
+<script th:src="@{/bootstrap-4.4.1-dist/js/bootstrap.js}"></script>
+</body>
+
+<script>
+
+    function getBookImages(bookId) {
+        var imageContent =
+            "            <div class=\"row justify-content-center\">\n" +
+            "                <div class=\"col-6\">\n";
+        $.get("/book/images/" + bookId, {},
+            function (data) {
+                $.each(data.data, function (i, item) {
+                    imageContent = imageContent + "<img class=\"book-image\" src=\"/image/" + item.imageName + "\">";
+                })
+                imageContent = imageContent + "</div></div>";
+                $("#card-body").append(imageContent);
+            });
+    }
+
+    function getBookComment(bookId) {
+        var imageContent =
+            "            <div style='text-align: left' class=\"row justify-content-center\">\n" +
+            "                <div class=\"col-8\">" +
+            "<button type=\"button\" id='btn-comment' class=\"btn btn-light\">发表评论</button>";
+                    imageContent = imageContent + "    <div id=\"accordion\">";
+        $.get("/book/comments/" + bookId, {},
+            function (data) {
+                $.each(data.data, function (i, item) {
+                    imageContent = imageContent + "        <div class=\"card\">\n" +
+                        "            <div class=\"card-header\" id=\"heading"+i+"\">\n" +
+                        "                <h5 class=\"mb-0\">\n" +
+                        "                    <button class=\"btn btn-link collapsed\" data-toggle=\"collapse\" data-target=\"#collapse"+i+"\"\n" +
+                        "                            aria-expanded=\"false\" aria-controls=\"collapse"+i+"\">\n" +
+                       item.commentDetails.sender + ":" + item.commentDetails.content +
+                        "                    </button>\n" +
+                        "                </h5>\n" +
+                        "            </div>\n" +
+                        "            <div id=\"collapse"+i+"\" class=\"collapse\" aria-labelledby=\"heading"+i+"\" data-parent=\"#accordion\">\n" +
+                        "                <div class=\"card-body\">";
+
+                    imageContent = imageContent + "<div class=\"media comment-wrap\">\n" +
+                        // "  <img src=\"...\" class=\"mr-3\" alt=\"...\">\n" +
+                        "  <div class=\"media-body\">\n";
+                        // "    <h5 class=\"mt-0\">" + item.commentDetails.sender + "</h5>\n" +
+                        // item.commentDetails.content;
+                    if (item.subCommentDetails.length > 0) {
+                        $.each(item.subCommentDetails, function (i2, item2) {
+                            imageContent = imageContent + "\n" +
+                                "    <div class=\"media mt-3\">\n" +
+                                "      <a class=\"mr-3\" href=\"#\">\n" +
+                                // "        <img src=\"...\" class=\"mr-3\" alt=\"...\">\n" +
+                                "      </a>\n" +
+                                "      <div class=\"media-body\">\n" +
+                                "        <h5 class=\"mt-0\">" + item2.receiver + "回复" + item2.sender + "</h5>\n" +
+                                item2.content +
+                                "      </div>\n" +
+                                "</div>";
+                        });
+                    }
+                    imageContent = imageContent + "</div></div></div></div></div>"
+                })
+
+                $("#card-body").html(imageContent);
+            });
+    }
+
+    $(function () {
+        var bookId = $("#book-id").attr("value");
+        getBookImages(bookId);
+
+        $("#tab-image").click(function () {
+            $("#card-body").html(" ");
+            getBookImages(bookId);
+            $(".nav-link").removeClass("active");
+            $("#tab-image").addClass("active");
+        });
+
+        $("#tab-comment").click(function () {
+            $(".nav-link").removeClass("active");
+            $("#tab-comment").addClass("active");
+            getBookComment(bookId)
+        });
+
+        $(document).off("click", "#btn-comment");
+        $(document).on("click", "#btn-comment", function (e) {
+            $('#modal-comment').modal("show");
+        });
+
+        $(document).off("click", "#btn-message");
+        $(document).on("click", "#btn-message", function (e) {
+            $('#modal-message').modal("show");
+        });
+
+
+        $("#submit-comment").click(function () {
+            var formObj = document.getElementById("form");
+            var formData = new FormData(formObj);
+            formData.set("bookId", bookId);
+            $('#modal-comment').modal("hide");
+            $.ajax({
+                type: "post",
+                url: "/book/comment",
+                data: formData,
+                dataType: "json",
+                cache: false,
+                processData: false,
+                contentType: false,
+                success: function (data) {
+                    console.log(data)
+                    if (data.code == '1') {
+                        formObj.reset();
+                        $('.toast').removeClass('bg-danger');
+                        $('.toast').addClass('bg-success');
+                        $('.toast').toast('show');
+                        $("#boast-content").html("评论成功");
+                        getBookComment(bookId);
+                    } else {
+                        $('.toast').removeClass('bg-success');
+                        $('.toast').addClass('bg-danger');
+                        $('.toast').toast('show');
+                        $("#boast-content").html(data.msg);
+                    }
+                }
+            });
+        });
+
+        $("#submit-message").click(function () {
+            var formObj = document.getElementById("form-message");
+            var formData = new FormData(formObj);
+            formData.set("bookId", bookId);
+            $('#modal-message').modal("hide");
+            $.ajax({
+                type: "post",
+                url: "/book/contact",
+                data: formData,
+                dataType: "json",
+                cache: false,
+                processData: false,
+                contentType: false,
+                success: function (data) {
+                    console.log(data)
+                    if (data.code == '1') {
+                        formObj.reset();
+                        $('.toast').removeClass('bg-danger');
+                        $('.toast').addClass('bg-success');
+                        $('.toast').toast('show');
+                        $("#boast-content").html("发送成功");
+                        getBookComment(bookId);
+                    } else {
+                        $('.toast').removeClass('bg-success');
+                        $('.toast').addClass('bg-danger');
+                        $('.toast').toast('show');
+                        $("#boast-content").html(data.msg);
+                    }
+                }
+            });
+        });
+
+    });
+</script>
+</html>

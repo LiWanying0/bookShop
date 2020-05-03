@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.nit.book.shop.dao.BookDAO;
 import com.nit.book.shop.entity.Book;
 import com.nit.book.shop.entity.BookDTO;
+import com.nit.book.shop.entity.BookImageVO;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
@@ -22,5 +23,7 @@ public interface BookMapper extends BaseMapper<Book> {
 
     List<Book> selectBooksByCategoryLimit(@Param("limit") Integer limit);
 
-    IPage<BookDTO> selectBookDTOPage(@Param("page") Page<BookDTO> page, @Param("search") String search);
+    IPage<BookDTO> selectBookDTOPage(@Param("page") Page<BookDTO> page, @Param("search") String search, @Param("uid") Integer uid);
+
+    IPage<BookImageVO> findBookImageVOList(@Param("page") Page<BookImageVO> page, @Param("categoryId") Integer categoryId, @Param("search") String search);
 }

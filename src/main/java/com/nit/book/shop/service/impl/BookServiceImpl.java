@@ -6,12 +6,9 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.nit.book.shop.common.JsonResult;
-import com.nit.book.shop.entity.Book;
-import com.nit.book.shop.entity.BookDTO;
-import com.nit.book.shop.entity.BookImage;
-import com.nit.book.shop.entity.BookIndexVO;
-import com.nit.book.shop.mapper.BookImageMapper;
-import com.nit.book.shop.mapper.BookMapper;
+import com.nit.book.shop.entity.*;
+import com.nit.book.shop.mapper.*;
+import com.nit.book.shop.service.AuthenticationService;
 import com.nit.book.shop.service.BookImageService;
 import com.nit.book.shop.service.BookService;
 import lombok.extern.slf4j.Slf4j;
@@ -21,7 +18,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
-import org.springframework.transaction.interceptor.TransactionalProxy;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -35,106 +32,30 @@ import java.util.stream.Collectors;
 @Service
 public class BookServiceImpl extends ServiceImpl<BookMapper, Book> implements BookService {
 
-//    @Autowired
-//    private BookDAO bookDAO;
-//    @Autowired
-//    private CategoryDAO categoryDAO;
-//    @Autowired
-//    private BookImageDAO bookImageDAO;
-//
-//    @Override
-//    public Map<Category, List<Book>> listByCategory() {
-//        // 获取所有Category
-//        List<Category> categories = categoryDAO.list();
-//        // 使用LinkedHashMap存储，若使用HashMap则无序
-//        Map<Category, List<Book>> booksMap = new LinkedHashMap<>();
-//        for (Category category : categories) {
-//            List<Book> books = bookDAO.getListByCategoryId(0, 5, 1, category.getId());
-//            if (books.size() > 0) {
-//                // 当前的Book对象无BookImage，遍历每个Book对象并放入相应的BookImage
-//                for (Book book : books) {
-//                    book.setBookImage(bookImageDAO.getByBookId(book.getId()));
-//                }
-//            }
-//            booksMap.put(category, books);
-//        }
-//        return booksMap;
-//    }
-//
-//    @Override
-//    public List<Book> listByUserId(int uid, int bookType) {
-//        List<Book> books = bookDAO.getListByUserId(uid, bookType);
-//        for (Book book : books) {
-//            book.setBookImage(bookImageDAO.getByBookId(book.getId()));
-//        }
-//        return books;
-//    }
-//
-//    @Override
-//    public List<Book> listByCategoryId(int bookType, int cid) {
-//        List<Book> books = bookDAO.getListByCategoryId(-1, -1, bookType, cid);
-//        for (Book book : books) {
-//            book.setBookImage(bookImageDAO.getByBookId(book.getId()));
-//        }
-//        return books;
-//    }
-//
-//    @Override
-//    public Book get(int id) {
-//        Book book = bookDAO.get(id);
-//        book.setBookImage(bookImageDAO.getByBookId(id));
-//        return book;
-//    }
-//
-//    @Override
-//    public int getUserId(int id) {
-//        return bookDAO.getUserId(id);
-//    }
-//
-//    @Override
-//    public void add(Book book) {
-//        bookDAO.add(book);
-//    }
-//
-//    @Override
-//    public int count() {
-//        return bookDAO.count();
-//    }
-//
-//    @Override
-//    public void delete(int id) {
-//        bookDAO.delete(id);
-//    }
-//
-//    @Override
-//    public List<Book> list() {
-//        List<Book> books = bookDAO.list();
-//        for (Book book : books) {
-//            book.setBookImage(bookImageDAO.getByBookId(book.getId()));
-//        }
-//        return books;
-//    }
-//
-//    @Override
-//    public List<Book> listByBookType(int bookType) {
-//        List<Book> books = bookDAO.listByBookType(bookType);
-//        for (Book book : books) {
-//            book.setBookImage(bookImageDAO.getByBookId(book.getId()));
-//        }
-//        return books;
-//    }
-//
-//    @Override
-//    public void update(Book book) {
-//        bookDAO.update(book);
-//    }
+    @Autowired
+    private BookImageService bookImageService;
 
+    @Autowired
+    private BookCommentMapper bookCommentMapper;
 
     @Autowired
     private BookMapper bookMapper;
 
     @Autowired
+    private UserMapper userMapper;
+
+    @Autowired
+    private MessageMapper messageMapper;
+
+    @Autowired
     private BookImageMapper bookImageMapper;
+
+
+    @Autowired
+    private PurchaseMapper purchaseMapper;
+
+    @Autowired
+    private AuthenticationService authenticationService;
 
 
     @Override
@@ -147,12 +68,15 @@ public class BookServiceImpl extends ServiceImpl<BookMapper, Book> implements Bo
         QueryWrapper<BookImage> queryWrapper = new QueryWrapper<>();
         queryWrapper.in("bid", bookIdList);
         List<BookImage> bookImages = bookImageMapper.selectList(queryWrapper);
-        Map<Integer, Integer> bookImageMap = bookImages.stream().collect(Collectors.toMap(BookImage::getBid, BookImage::getId, (oldObj, newObj) -> newObj));
+        Map<Integer, BookImage> bookImageMap = bookImages.stream().collect(Collectors.toMap(BookImage::getBid, b -> b, (oldObj, newObj) -> oldObj));
 
         List<BookDTO> bookDTOS = books.stream().map(b -> {
             BookDTO bookDTO = new BookDTO();
             BeanUtils.copyProperties(b, bookDTO);
-            bookDTO.setImageId(bookImageMap.getOrDefault(b.getId(), 0));
+            BookImage bi = bookImageMap.get(b.getId());
+            if (bi != null) {
+                bookDTO.setBookImage(bi);
+            }
             return bookDTO;
         }).collect(Collectors.toList());
 
@@ -170,7 +94,8 @@ public class BookServiceImpl extends ServiceImpl<BookMapper, Book> implements Bo
     @Override
     public JsonResult<IPage<BookDTO>> findBookList(Integer pageNum, String search) {
         Page<BookDTO> page = new Page(pageNum, 15);
-        IPage<BookDTO> videoList = bookMapper.selectBookDTOPage(page, search);
+        User user = authenticationService.findCurrentUser();
+        IPage<BookDTO> videoList = bookMapper.selectBookDTOPage(page, search, user.getId());
         return JsonResult.success(videoList);
     }
 
@@ -183,27 +108,27 @@ public class BookServiceImpl extends ServiceImpl<BookMapper, Book> implements Bo
     @Value("${image.save-path}")
     private String imagePath;
 
-    @Autowired
-    private BookImageService bookImageService;
 
     @Transactional
     @Override
     public JsonResult<Integer> uploadBook(Book book, MultipartFile[] images) {
+        User user = authenticationService.findCurrentUser();
 
         QueryWrapper<Book> bookQueryWrapper = new QueryWrapper<>();
-        bookQueryWrapper.eq("uid", 1).eq("name", book.getName());
+        bookQueryWrapper.eq("uid", user.getId()).eq("name", book.getName());
         Book oldBook = bookMapper.selectOne(bookQueryWrapper);
-        if (oldBook !=null){
+        if (oldBook != null) {
             return JsonResult.error("书名不能和已发布的书名相同");
         }
-        book.setUid(1);
+        book.setUid(user.getId());
         book.setDate(LocalDateTime.now());
         int res = bookMapper.insert(book);
         if (res < 1) {
             return JsonResult.error("保存失败，请稍后再试");
         }
 
-        if (images.length <= 1 && StringUtils.isEmpty(images[0].getOriginalFilename())){
+        if (images.length <= 1 && StringUtils.isEmpty(images[0].getOriginalFilename())) {
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return JsonResult.error("请至少上传一张图片");
         }
 
@@ -226,9 +151,9 @@ public class BookServiceImpl extends ServiceImpl<BookMapper, Book> implements Bo
         List<BookImage> bookImages = imageNames.stream().map(i -> {
             return new BookImage(null, book.getId(), i);
         }).collect(Collectors.toList());
-        boolean success =  bookImageService.saveBatch(bookImages);
-        if (!success){
-            TransactionAspectSupport.currentTransactionStatus().isRollbackOnly();
+        boolean success = bookImageService.saveBatch(bookImages);
+        if (!success) {
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return JsonResult.error("发布失败，请稍后再试");
         }
         return JsonResult.success(res);
@@ -237,7 +162,7 @@ public class BookServiceImpl extends ServiceImpl<BookMapper, Book> implements Bo
     @Override
     public JsonResult<Book> findBookById(Integer bookId) {
         Book book = bookMapper.selectById(bookId);
-        if (book!=null){
+        if (book != null) {
             return JsonResult.success(book);
         }
         return JsonResult.error("找不到书籍信息");
@@ -253,10 +178,168 @@ public class BookServiceImpl extends ServiceImpl<BookMapper, Book> implements Bo
         BeanUtils.copyProperties(book, oldBook);
         oldBook.setDate(LocalDateTime.now());
         int res = bookMapper.updateById(oldBook);
-        if (res > 0){
+        if (res > 0) {
             return JsonResult.success(res);
         }
         return JsonResult.error("修改失败，请稍后再试");
+    }
+
+    @Override
+    public BookAndImagesVO findBookAndImages(Integer bookId) {
+        BookAndImagesVO vo = new BookAndImagesVO();
+
+        JsonResult<Book> result = findBookById(bookId);
+        if (!result.getCode().equals(JsonResult.SUCCESS_CODE)) {
+            return null;
+        }
+        vo.setBook(result.getData());
+        List<BookImage> bookImages = bookImageService.findImagesByBookId(bookId);
+        if (CollectionUtils.isEmpty(bookImages)) {
+            vo.setBookImages(Collections.emptyList());
+        } else {
+            vo.setBookImages(bookImages);
+        }
+        return vo;
+    }
+
+    @Transactional
+    @Override
+    public JsonResult<Boolean> commentBook(Integer bookId, String comment) {
+        Book book = bookMapper.selectById(bookId);
+        if (book == null) {
+            return JsonResult.error("书籍不存在");
+        }
+        User currentUser = authenticationService.findCurrentUser();
+        User receiver = userMapper.selectById(book.getUid());
+        Message message = new Message();
+        message.setBid(bookId)
+            .setBname(book.getName())
+            .setReceiveUid(receiver.getId())
+            .setReceiver(receiver.getName())
+            .setSendUid(currentUser.getId())
+            .setSender(currentUser.getName())
+            .setContent(comment)
+            .setDate(LocalDateTime.now())
+            .setType(1)
+            .setParentId(0)
+            .setIsRead(0);
+        int res2 = messageMapper.insert(message);
+        if (res2 < 1) {
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            return JsonResult.error("评论失败，请稍后再试");
+        }
+        return JsonResult.success(true);
+    }
+
+    @Override
+    public JsonResult<List<BookMessageAndCommentVO>> findComment(Integer bookId) {
+        /**
+         * 获取所有评论和对应的用户名信息
+         */
+        QueryWrapper<Message> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("bid", bookId).eq("type", 1);
+        List<Message> messageList = messageMapper.selectList(queryWrapper);
+        if (CollectionUtils.isEmpty(messageList)) {
+            return JsonResult.success(Collections.emptyList());
+        }
+
+        Map<Integer, List<Message>> messageGroup =
+            messageList
+                .stream()
+                .collect(Collectors.groupingBy(Message::getParentId));
+
+        List<Message> parentMessageList = messageGroup.getOrDefault(0, Collections.emptyList());
+        List<BookMessageAndCommentVO> voList = parentMessageList.stream().map(p -> {
+            BookMessageAndCommentVO vo = new BookMessageAndCommentVO();
+            vo.setCommentDetails(p);
+            List<Message> replyCommentDetails = messageGroup.get(p.getId());
+            if (CollectionUtils.isEmpty(replyCommentDetails)) {
+                vo.setSubCommentDetails(Collections.emptyList());
+            } else {
+                vo.setSubCommentDetails(replyCommentDetails);
+            }
+            return vo;
+        }).collect(Collectors.toList());
+
+        return JsonResult.success(voList);
+    }
+
+    @Override
+    public IPage<BookImageVO> findBookImageVOList(Integer page, Integer categoryId, String search) {
+        Page<BookImageVO> pageObj = new Page<>(page, 20);
+        IPage<BookImageVO> bookImageVOList = bookMapper.findBookImageVOList(pageObj, categoryId, search);
+        return bookImageVOList;
+    }
+
+    @Override
+    public JsonResult<Boolean> contact(Integer bookId, String content) {
+        Book book = bookMapper.selectById(bookId);
+        if (book == null) {
+            return JsonResult.error("书籍不存在");
+        }
+        User currentUser = authenticationService.findCurrentUser();
+        User receiver = userMapper.selectById(book.getUid());
+        Message message = new Message();
+        message.setBid(bookId)
+            .setBname(book.getName())
+            .setReceiveUid(receiver.getId())
+            .setReceiver(receiver.getName())
+            .setSendUid(currentUser.getId())
+            .setSender(currentUser.getName())
+            .setContent(content)
+            .setDate(LocalDateTime.now())
+            .setType(2)
+            .setParentId(0)
+            .setIsRead(0);
+        int res2 = messageMapper.insert(message);
+        if (res2 < 1) {
+            return JsonResult.error("发送失败，请稍后再试");
+        }
+        return JsonResult.success(true);
+    }
+
+    @Override
+    public JsonResult<Integer> purchase(String title, String content) {
+        Purchase purchase = new Purchase();
+        User currentUser = authenticationService.findCurrentUser();
+        purchase
+            .setUid(currentUser.getId())
+            .setTitle(title)
+            .setUname(currentUser.getName())
+            .setContent(content)
+            .setDate(LocalDateTime.now());
+        Integer res = purchaseMapper.insert(purchase);
+        if (res < 1){
+            return JsonResult.error("发布失败，请稍后再试");
+        }
+        return JsonResult.success(res);
+    }
+
+    @Override
+    public JsonResult<Boolean> contactPurchaser(Integer purchaseId, String content) {
+        Purchase purchase = purchaseMapper.selectById(purchaseId);
+        if (purchase == null) {
+            return JsonResult.error("求购信息不存在");
+        }
+        User currentUser = authenticationService.findCurrentUser();
+        User receiver = userMapper.selectById(purchase.getUid());
+        Message message = new Message();
+        message.setBid(purchaseId)
+            .setBname(purchase.getTitle())
+            .setReceiveUid(receiver.getId())
+            .setReceiver(receiver.getName())
+            .setSendUid(currentUser.getId())
+            .setSender(currentUser.getName())
+            .setContent(content)
+            .setDate(LocalDateTime.now())
+            .setType(3)
+            .setParentId(0)
+            .setIsRead(0);
+        int res2 = messageMapper.insert(message);
+        if (res2 < 1) {
+            return JsonResult.error("发送失败，请稍后再试");
+        }
+        return JsonResult.success(true);
     }
 
 }
